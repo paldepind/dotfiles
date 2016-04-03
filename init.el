@@ -1,3 +1,5 @@
+;;; init.el --- My init file -*- lexical-binding: t -*-
+
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -21,11 +23,14 @@
 (require 'bind-key)
 
 (setq use-package-always-ensure t)
-
+(setq sentence-end-double-space nil)
 (setq confirm-kill-emacs 'y-or-n-p)
 
 (delete-selection-mode 1) ;; typed text replaces active selection-coding-system
 (setq-default indent-tabs-mode nil) ;; use spaces for indentation
+
+(global-set-key (kbd "<f9>") 'previous-buffer)
+(global-set-key (kbd "<f10>") 'next-buffer)
 
 (exec-path-from-shell-initialize)
 (exec-path-from-shell-copy-env "NIX_GHC")
@@ -57,6 +62,7 @@
                     :height 105
                     :weight 'normal
                     :width 'normal)
+
 (setq color-themes '())
 (use-package color-theme-solarized
   :config
@@ -75,7 +81,8 @@
 
 
 (defun my-resize-margins ()
-  (let ((margin-size (/ (- (frame-width) 80) 2)))
+  (interactive)
+  (let ((margin-size (/ (- (window-width) 80) 2)))
     (set-window-margins nil margin-size margin-size)))
 
 ;; Session/desktop
@@ -116,10 +123,10 @@
   (global-set-key (kbd "C-x C-1") 'delete-other-windows)
   (global-set-key (kbd "C-x C-2") 'split-window-below)
   (global-set-key (kbd "C-x C-3") 'split-window-right)
-  (global-set-key (kbd "C-x C-0") 'delete-window)
-)
+  (global-set-key (kbd "C-x C-0") 'delete-window))
 
 ;; Avy
+(defvar my-keys '(?a ?r ?s ?t ?d ?h ?n ?e ?i ?o))
 (use-package avy
   :bind (("C-," . avy-goto-char-2)
 	 ("C-'" . avy-goto-char-in-line)
@@ -127,24 +134,24 @@
 	 ("M-n" . avy-goto-line-below)
 	 ("M-p" . avy-goto-line-above))
   :init
-  (setq avy-keys '(?a ?r ?s ?t ?d ?h ?n ?e ?i ?o))
+  (setq avy-keys my-keys)
   (setq avy-all-windows nil)
   (setq avy-all-windows-alt 'all-frames)
   :config
-  (avy-setup-default)
-)
+  (avy-setup-default))
 
 (use-package ace-window
   :bind ("C-o" . ace-window)
   :init
-  (setq aw-keys '(?a ?r ?s ?t ?d ?h ?e ?v ?k))
-  (setq aw-dispatch-always t)
-)
+  (setq aw-keys my-keys))
 
 ;; Helm
 (use-package helm
   :init
   (require 'helm-config)
+  (setq helm-M-x-fuzzy-match 1)
+  ;; (setq helm-split-window-in-side-p t)
+  (helm-autoresize-mode 1)
   (helm-mode 1)
   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
   (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
@@ -153,11 +160,38 @@
 	 ("M-x" . helm-M-x)
 	 ("C-x C-b" . helm-mini)))
 
+(use-package yasnippet
+  :diminish yas-minor-mode 
+  :config
+  ;; (setq yas-verbosity 0)
+  (push "~/.emacs.d/yasnippet-snippets" yas-snippet-dirs)
+  (yas-global-mode 1))
+
+(use-package keyfreq
+  :init
+  (keyfreq-mode)
+  (keyfreq-autosave-mode))
+
 ;; Company mode
 (use-package company
   :diminish company-mode
   :config
+  (setq company-idle-delay 0)
+  (defvar company-mode/enable-yas t
+    "Enable yasnippet for all backends.")
+
+  (defun company-mode/backend-with-yas (backend)
+    (if (or (not company-mode/enable-yas) (and (listp backend) (member 'company-yasnippet backend)))
+        backend
+      (append (if (consp backend) backend (list backend))
+              '(:with company-yasnippet))))
+
+  (setq company-backends (mapcar #'company-mode/backend-with-yas company-backends))
   (global-company-mode))
+
+;; Magit
+(use-package magit
+  :bind ("<f8>" . magit-status))
 
 ;; Projectile
 (use-package projectile
@@ -185,13 +219,70 @@
   (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
   (setq org-clock-into-drawer t)
-  (auto-fill-mode)
+  (setq org-src-fontify-natively t) ; Syntax highlighting for code blocks
+  (add-hook 'org-mode-hook 'auto-fill-mode)
 
   (use-package org-journal
     :init (setq org-journal-dir "~/org/journal/"))
 
   (use-package org-bullets
     :config (add-hook 'org-mode-hook 'org-bullets-mode 1)))
+
+;; Flycheck
+(use-package flycheck
+  :config
+  (global-flycheck-mode))
+
+;; Elisp
+(use-package paren-face
+  :config
+  (global-paren-face-mode 1))
+
+(use-package smartparens
+  :defer t
+  :commands (smartparens-mode show-smartparens-mode)
+  :config
+  (use-package smartparens-config :ensure nil)
+  (smartparens-global-strict-mode 1)
+  :bind
+  (("C-M-k" . sp-kill-sexp)
+   ("C-M-f" . sp-forward-sexp)
+   ("C-M-b" . sp-backward-sexp)
+   ("C-M-n" . sp-up-sexp)
+   ("C-M-d" . sp-down-sexp)
+   ("C-M-u" . sp-backward-up-sexp)
+   ("C-M-p" . sp-backward-down-sexp)
+   ("C-M-w" . sp-copy-sexp)
+   ("M-s" . sp-splice-sexp)
+   ("M-r" . sp-splice-sexp-killing-around)
+   ("C-)" . sp-forward-slurp-sexp)
+   ("C-}" . sp-forward-barf-sexp)
+   ("C-(" . sp-backward-slurp-sexp)
+   ("C-{" . sp-backward-barf-sexp)
+   ("M-S" . sp-split-sexp)
+   ("M-J" . sp-join-sexp)
+   ("C-M-t" . sp-transpose-sexp)))
+
+(use-package nameless
+  :commands (nameless-mode)
+  :init
+  (add-hook 'emacs-lisp-mode-hook 'nameless-mode))
+
+(use-package eldoc
+  :diminish eldoc-mode
+  :commands eldoc-mode
+  :config
+  (use-package eldoc-extension
+    :disabled t
+    :defer t
+    :init
+    (add-hook 'emacs-lisp-mode-hook
+              #'(lambda () (require 'eldoc-extension)) t))
+  (eldoc-add-command 'paredit-backward-delete
+                     'paredit-close-round))
+
+;; (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+(add-hook 'emacs-lisp-mode-hook 'smartparens-mode)
 
 ;; Haskell
 
@@ -281,4 +372,20 @@
 ;; Markdown
 (use-package markdown-mode
   :mode ("\\.md\\'" . markdown-mode)
-  :config (add-hook 'markdown-mode-hook 'flyspell-mode))
+  :config
+  (add-hook 'markdown-mode-hook 'flySpell-mode)
+  (add-hook 'markdown-mode-hook 'auto-fill-mode))
+
+(use-package php-mode
+  :mode "\\.php\\'")
+
+;; Smart comment
+
+(use-package smart-comment
+  :ensure nil
+  :load-path "~/projects/smart-comment"
+  :bind ("M-;" . smart-comment))
+
+;; (add-to-list 'load-path "~/projects/smart-comment/")
+;; (require 'smart-comment)
+;; (global-set-key (kbd "M-;") 'smart-comment)
