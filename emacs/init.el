@@ -2,8 +2,9 @@
 
 (menu-bar-mode -1)
 (tool-bar-mode -1)
-(scroll-bar-mode -1)
 (setq inhibit-startup-screen t)
+(setq-default scroll-bar-width 6)
+(set-scroll-bar-mode 'right)
 
 (require 'package)
 (setq package-enable-at-startup nil)
@@ -25,6 +26,7 @@
 (setq use-package-always-ensure t)
 (setq sentence-end-double-space nil)
 (setq confirm-kill-emacs 'y-or-n-p)
+(setq scheme-program-name "petite")
 
 (delete-selection-mode 1) ;; typed text replaces active selection-coding-system
 (setq-default indent-tabs-mode nil) ;; use spaces for indentation
@@ -32,22 +34,30 @@
 (global-set-key (kbd "<f9>") 'previous-buffer)
 (global-set-key (kbd "<f10>") 'next-buffer)
 
-(exec-path-from-shell-initialize)
-(exec-path-from-shell-copy-env "NIX_GHC")
-(exec-path-from-shell-copy-env "NIX_GHCPKG")
-(exec-path-from-shell-copy-env "NIX_GHC_DOCDIR")
-(exec-path-from-shell-copy-env "NIX_GHC_LIBDIR")
+;; (exec-path-from-shell-initialize)
+;; (exec-path-from-shell-copy-env "NIX_GHC")
+;; (exec-path-from-shell-copy-env "NIX_GHCPKG")
+;; (exec-path-from-shell-copy-env "NIX_GHC_DOCDIR")
+;; (exec-path-from-shell-copy-env "NIX_GHC_LIBDIR")
 
 ;; scroll one line at a time (less "jumpy" than defaults)
 (use-package smooth-scrolling
   :config
   (smooth-scrolling-mode 1))
 
+;; (use-package smooth-scroll
+;;   :config
+;;   )
+
 ;; animated scrolling
 (use-package sublimity
   :init
+  (setq sublimity-auto-hscroll-mode nil
+        auto-hscroll-mode t)
   (require 'sublimity-scroll)
   :config
+  (setq sublimity-auto-hscroll-mode nil
+        auto-hscroll-mode t)
   (sublimity-mode 1))
 
 ;; enjoyable mouse scrolling
@@ -63,22 +73,40 @@
                     :weight 'normal
                     :width 'normal)
 
-(setq color-themes '())
-(use-package color-theme-solarized
-  :config
-  (load-theme 'solarized t))
+(load-theme 'leuven t)
+;; (setq color-themes '())
+;; (use-package color-theme-solarized
+;;   :config
+;;   (load-theme 'solarized t))
 
-(use-package smart-mode-line
-  :config
-  (setq sml/theme 'respectful
-	sml/no-confirm-load-theme t
-	sml/shorten-directory t
-	sml/name-width '(32 . 48)
-	sml/shorten-modes t
-	sml/use-projectile-p 'before-prefixes
-	sml/projectile-replacement-format "[%s]")
-  (sml/setup))
+;; (use-package smart-mode-line
+;;   :config
+;;   (setq sml/theme 'respectful
+;; 	sml/no-confirm-load-theme t
+;; 	sml/shorten-directory t
+;; 	sml/name-width '(32 . 48)
+;; 	sml/shorten-modes t
+;; 	sml/use-projectile-p 'before-prefixes
+;; 	sml/projectile-replacement-format "[%s]")
+;;   (sml/setup))
 
+(use-package undo-tree
+  :diminish ""
+  :config
+  (setq undo-tree-visualizer-relative-timestamps t
+        undo-tree-visualizer-timestamps t)
+  (global-undo-tree-mode))
+
+;; (require 'composable)
+(use-package composable
+  :ensure nil
+  :load-path "~/projects/composable.el"
+  :config
+  (composable-mode)
+  (composable-mark-mode)
+  (composable-def '(smart-comment-region))
+  (define-key composable-object-mode-map "'" 'avy-goto-char-in-line)
+  (define-key composable-mode-map (kbd "M-;") 'composable-smart-comment-region))
 
 (defun my-resize-margins ()
   (interactive)
@@ -113,8 +141,12 @@
 
 ;; (define-key evil-insert-state-map (kbd "M-n") 'evil-force-normal-state)
 
+(define-key input-decode-map (kbd "C-m") (kbd "H-m"))
+(global-set-key (kbd "H-m") 'helm-mini)
+
 ;; god-mode
 (define-key input-decode-map (kbd "C-i") (kbd "H-i")) ; Allow binding to C-i as H-i
+
 (use-package god-mode
   :config
   (global-set-key (kbd "H-i") 'god-local-mode)
@@ -149,6 +181,7 @@
 (use-package helm
   :init
   (require 'helm-config)
+  :config
   (setq helm-M-x-fuzzy-match 1)
   ;; (setq helm-split-window-in-side-p t)
   (helm-autoresize-mode 1)
@@ -176,7 +209,7 @@
 (use-package company
   :diminish company-mode
   :config
-  (setq company-idle-delay 0)
+  (setq company-idle-delay 0.1)
   (defvar company-mode/enable-yas t
     "Enable yasnippet for all backends.")
 
@@ -193,6 +226,23 @@
 (use-package magit
   :bind ("<f8>" . magit-status))
 
+(use-package git-gutter+
+  :init (global-git-gutter+-mode)
+  :config
+  (define-key git-gutter+-mode-map (kbd "C-x n") 'git-gutter+-next-hunk)
+  (define-key git-gutter+-mode-map (kbd "C-x p") 'git-gutter+-previous-hunk)
+  (define-key git-gutter+-mode-map (kbd "C-x v =") 'git-gutter+-show-hunk-inline-at-point)
+  (define-key git-gutter+-mode-map (kbd "C-x r") 'git-gutter+-revert-hunks)
+  (define-key git-gutter+-mode-map (kbd "C-x t") 'git-gutter+-stage-hunks)
+  (define-key git-gutter+-mode-map (kbd "C-x c") 'git-gutter+-commit)
+  (define-key git-gutter+-mode-map (kbd "C-x C") 'git-gutter+-stage-and-commit)
+  (define-key git-gutter+-mode-map (kbd "C-x C-y") 'git-gutter+-stage-and-commit-whole-buffer)
+  :diminish (git-gutter+-mode . "gg"))
+
+(use-package git-gutter
+  :init
+  (global-git-gutter-mode))
+
 ;; Projectile
 (use-package projectile
   :config
@@ -203,10 +253,16 @@
     (projectile-global-mode)
     (helm-projectile-on)))
 
-(use-package whole-line-or-region
-  :diminish whole-line-or-region-mode
-  :config
-  (whole-line-or-region-mode 1))
+;; (use-package whole-line-or-region
+;;   :diminish whole-line-or-region-mode
+;;   :config
+;;   (whole-line-or-region-mode 1))
+
+;; circe
+(setq circe-network-options
+      `(("Freenode"
+         :nick "paldepind"
+         :channels ("#emacs" "#haskell"))))
 
 ;; Org mode
 (use-package org
@@ -286,10 +342,6 @@
 
 ;; Haskell
 
-;; (let ((my-cabal-path (expand-file-name "~/.cabal/bin")))
-  ;; (setenv "PATH" (concat my-cabal-path path-separator (getenv "PATH")))
-  ;; (add-to-list 'exec-path my-cabal-path))
-
 ; (require 'shm)
 ; (set-face-background 'shm-current-face "#eee8d5")
 ; (set-face-background 'shm-quarantine-face "lemonchiffon")
@@ -299,36 +351,21 @@
 (use-package haskell-mode
   :mode "\\.hs\\'"
   :config
+  (require 'haskell-doc)
+  (add-hook 'haskell-mode-hook 'haskell-doc-mode)
   (require 'haskell-interactive-mode)
   (require 'haskell-process)
-  ;; (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-  ;; (add-hook 'haskell-mode-hook 'structured-haskell-mode)
+  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
   
   (autoload 'ghc-init "ghc" nil t)
   (autoload 'ghc-debug "ghc" nil t)
   (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
 
-  (custom-set-variables
-   '(haskell-process-auto-import-loaded-modules t)
-   '(haskell-process-log t)
-   '(haskell-process-suggest-remove-import-lines t)
-   '(haskell-tags-on-save t))
-  
-  (define-key haskell-mode-map (kbd "C-c C-l") 'haskell-process-load-or-reload)
-  (define-key haskell-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
-  (define-key haskell-mode-map (kbd "C-c C-n C-t") 'haskell-process-do-type)
-  (define-key haskell-mode-map (kbd "C-c C-n C-i") 'haskell-process-do-info)
-  (define-key haskell-mode-map (kbd "C-c C-n C-c") 'haskell-process-cabal-build)
-  (define-key haskell-mode-map (kbd "C-c C-n c") 'haskell-process-cabal)
-  (define-key haskell-mode-map (kbd "C-c C-t") 'ghc-show-type)
-  (define-key haskell-mode-map (kbd "SPC") 'haskell-mode-contextual-space)
-  
-  (define-key haskell-cabal-mode-map (kbd "C-c C-z") 'haskell-interactive-switch)
-  (define-key haskell-cabal-mode-map (kbd "C-c C-k") 'haskell-interactive-mode-clear)
-  (define-key haskell-cabal-mode-map (kbd "C-c C-c") 'haskell-process-cabal-build)
-  (define-key haskell-cabal-mode-map (kbd "C-c c") 'haskell-process-cabal)
-  
-  (add-to-list 'company-backends 'company-ghc))
+  ;; (custom-set-variables
+  (setq haskell-process-auto-import-loaded-modules t)
+  (setq haskell-process-log t)
+  (setq haskell-process-suggest-remove-import-lines t)
+  (setq haskell-tags-on-save t))
 
 
 ;; JavaScript
@@ -383,9 +420,6 @@
 
 (use-package smart-comment
   :ensure nil
+  :commands (smart-comment-region)
   :load-path "~/projects/smart-comment"
   :bind ("M-;" . smart-comment))
-
-;; (add-to-list 'load-path "~/projects/smart-comment/")
-;; (require 'smart-comment)
-;; (global-set-key (kbd "M-;") 'smart-comment)
