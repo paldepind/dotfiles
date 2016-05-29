@@ -5,6 +5,7 @@
 (setq inhibit-startup-screen t)
 (setq-default scroll-bar-width 6)
 (set-scroll-bar-mode 'right)
+(setq-default cursor-type 'bar)
 
 (require 'package)
 (setq package-enable-at-startup nil)
@@ -26,7 +27,6 @@
 (setq use-package-always-ensure t)
 (setq sentence-end-double-space nil)
 (setq confirm-kill-emacs 'y-or-n-p)
-(setq scheme-program-name "petite")
 
 (delete-selection-mode 1) ;; typed text replaces active selection-coding-system
 (setq-default indent-tabs-mode nil) ;; use spaces for indentation
@@ -34,20 +34,22 @@
 (global-set-key (kbd "<f9>") 'previous-buffer)
 (global-set-key (kbd "<f10>") 'next-buffer)
 
-;; (exec-path-from-shell-initialize)
-;; (exec-path-from-shell-copy-env "NIX_GHC")
-;; (exec-path-from-shell-copy-env "NIX_GHCPKG")
-;; (exec-path-from-shell-copy-env "NIX_GHC_DOCDIR")
-;; (exec-path-from-shell-copy-env "NIX_GHC_LIBDIR")
+(defun eval-and-replace ()
+  "Replace the preceding sexp with its value."
+  (interactive)
+  (backward-kill-sexp)
+  (condition-case nil
+      (prin1 (eval (read (current-kill 0)))
+             (current-buffer))
+    (error (message "Invalid expression")
+           (insert (current-kill 0)))))
+
+(global-set-key (kbd "C-c e") 'eval-and-replace)
 
 ;; scroll one line at a time (less "jumpy" than defaults)
 (use-package smooth-scrolling
   :config
   (smooth-scrolling-mode 1))
-
-;; (use-package smooth-scroll
-;;   :config
-;;   )
 
 ;; animated scrolling
 (use-package sublimity
@@ -73,22 +75,10 @@
                     :weight 'normal
                     :width 'normal)
 
-(load-theme 'leuven t)
-;; (setq color-themes '())
-;; (use-package color-theme-solarized
-;;   :config
-;;   (load-theme 'solarized t))
-
-;; (use-package smart-mode-line
-;;   :config
-;;   (setq sml/theme 'respectful
-;; 	sml/no-confirm-load-theme t
-;; 	sml/shorten-directory t
-;; 	sml/name-width '(32 . 48)
-;; 	sml/shorten-modes t
-;; 	sml/use-projectile-p 'before-prefixes
-;; 	sml/projectile-replacement-format "[%s]")
-;;   (sml/setup))
+(setq color-themes '())
+(use-package color-theme-solarized
+  :config
+  (load-theme 'solarized t))
 
 (use-package undo-tree
   :diminish ""
@@ -155,16 +145,25 @@
   (global-set-key (kbd "C-x C-1") 'delete-other-windows)
   (global-set-key (kbd "C-x C-2") 'split-window-below)
   (global-set-key (kbd "C-x C-3") 'split-window-right)
-  (global-set-key (kbd "C-x C-0") 'delete-window))
+  (global-set-key (kbd "C-x C-0") 'delete-window)
+
+
+  (defun god-toggle-on-overwrite ()
+    "Toggle god-mode on overwrite-mode."
+    (if (bound-and-true-p overwrite-mode)
+        (god-local-mode-pause)
+      (god-local-mode-resume)))
+
+  (add-hook 'composable-object-mode-hook 'god-toggle-on-overwrite))
 
 ;; Avy
 (defvar my-keys '(?a ?r ?s ?t ?d ?h ?n ?e ?i ?o))
 (use-package avy
   :bind (("C-," . avy-goto-char-2)
-	 ("C-'" . avy-goto-char-in-line)
-	 ("M-/" . avy-goto-char-timer)
-	 ("M-n" . avy-goto-line-below)
-	 ("M-p" . avy-goto-line-above))
+         ("C-'" . avy-goto-char-in-line)
+         ("M-/" . avy-goto-char-timer)
+         ("M-n" . avy-goto-line-below)
+         ("M-p" . avy-goto-line-above))
   :init
   (setq avy-keys my-keys)
   (setq avy-all-windows nil)
@@ -190,11 +189,11 @@
   (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
   (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
   :bind (("C-x C-f" . helm-find-files)
-	 ("M-x" . helm-M-x)
-	 ("C-x C-b" . helm-mini)))
+         ("M-x" . helm-M-x)
+         ("C-x C-b" . helm-mini)))
 
 (use-package yasnippet
-  :diminish yas-minor-mode 
+  :diminish yas-minor-mode
   :config
   ;; (setq yas-verbosity 0)
   (push "~/.emacs.d/yasnippet-snippets" yas-snippet-dirs)
@@ -209,7 +208,7 @@
 (use-package company
   :diminish company-mode
   :config
-  (setq company-idle-delay 0.1)
+  (setq company-idle-delay 0.2)
   (defvar company-mode/enable-yas t
     "Enable yasnippet for all backends.")
 
@@ -268,15 +267,18 @@
 (use-package org
   :mode ("\\.org\\'" . org-mode)
   :config
-  ; (define-key global-map "\C-cl" 'org-store-link) ; Not sure if I want this
   (define-key global-map "\C-ca" 'org-agenda) ; Global hotkey for opening agenda
-  (setq org-log-done t) ; Save time when task gets done
   (add-to-list 'org-modules 'org-habit) ; Load the habbits module
-  (setq org-clock-persist 'history)
   (org-clock-persistence-insinuate)
+
+  (setq org-log-done t) ; Save time when task gets done
+  (setq org-clock-persist 'history)
   (setq org-clock-into-drawer t)
   (setq org-src-fontify-natively t) ; Syntax highlighting for code blocks
   (add-hook 'org-mode-hook 'auto-fill-mode)
+  (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+  (setq org-highlight-latex-and-related '(latex script entities))
+  (add-hook 'org-mode-hook 'flyspell-mode)
 
   (use-package org-journal
     :init (setq org-journal-dir "~/org/journal/"))
@@ -337,6 +339,28 @@
   (eldoc-add-command 'paredit-backward-delete
                      'paredit-close-round))
 
+(use-package scheme-mode
+  :ensure nil
+  :init
+  (setq scheme-program-name "petite")
+  :mode "\\.scm\\'"
+  :config
+  (add-hook 'inferior-scheme-mode-hook
+            (lambda ()
+              ;; Overwrite the standard 'switch-to-buffer' to use
+              ;; 'switch-to-buffer-other-window'
+              (defun switch-to-scheme (eob-p)
+                "Switch to the scheme process buffer.
+     With argument, position cursor at end of buffer."
+                (interactive "P")
+                (if (or (and scheme-buffer (get-buffer scheme-buffer))
+                        (scheme-interactively-start-process))
+                    (switch-to-buffer-other-window scheme-buffer)
+                  (error "No current process buffer.  See variable `scheme-buffer'"))
+                (when eob-p
+                  (push-mark)
+                  (goto-char (point-max)))))))
+
 ;; (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook 'smartparens-mode)
 
@@ -356,7 +380,7 @@
   (require 'haskell-interactive-mode)
   (require 'haskell-process)
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-  
+
   (autoload 'ghc-init "ghc" nil t)
   (autoload 'ghc-debug "ghc" nil t)
   (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
@@ -371,10 +395,35 @@
 ;; JavaScript
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 (add-hook 'js2-mode-hook (lambda ()
-				  (setq js-indent-level 2
-					js2-basic-offset 2)))
+                                  (setq js-indent-level 2
+                                        js2-basic-offset 2)))
 
-;; LaTeX
+(use-package typescript-mode
+  :mode "\\.ts\\'"
+  :config
+  (setq typescript-indent-level 2)
+  (add-hook 'typescript-mode-hook
+            (lambda ()
+              (tide-setup)
+              (eldoc-mode +1))))
+
+(use-package web-mode
+  :mode "\\.tsx\\'"
+  :config
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+  (add-hook 'web-mode-hook
+            (lambda ()
+              (when (string-equal "tsx" (file-name-extension buffer-file-name))
+                (tide-setup)
+                (flycheck-mode +1)
+                (setq flycheck-check-syntax-automatically '(save mode-enabled))
+                (eldoc-mode +1)
+                (company-mode-on)))))
+
+(use-package tide
+  :commands (tide-setup))
+
 (setq TeX-auto-save t)
 (setq TeX-parse-self t)
 (setq-default TeX-master nil)
@@ -383,9 +432,9 @@
 
 ;; Java
 (add-hook 'java-mode-hook (lambda ()
-			    (setq c-basic-offset 2
-				    tab-width 2
-				    indent-tabs-mode nil)))
+                            (setq c-basic-offset 4
+                                    tab-width 2
+                                    indent-tabs-mode nil)))
 
 ;; Maxima
 ;;(add-to-list 'load-path "/usr/share/emacs/")
@@ -410,16 +459,28 @@
 (use-package markdown-mode
   :mode ("\\.md\\'" . markdown-mode)
   :config
-  (add-hook 'markdown-mode-hook 'flySpell-mode)
+  (add-hook 'markdown-mode-hook 'flyspell-mode)
   (add-hook 'markdown-mode-hook 'auto-fill-mode))
 
 (use-package php-mode
   :mode "\\.php\\'")
 
 ;; Smart comment
-
 (use-package smart-comment
   :ensure nil
   :commands (smart-comment-region)
   :load-path "~/projects/smart-comment"
   :bind ("M-;" . smart-comment))
+
+(use-package flyspell
+  :bind ("<f7>" . flyspell-switch-dictionary)
+  :config
+  (setq ispell-program-name "aspell"
+        ispell-dictionary "english")
+  (add-hook 'flyspell-mode-hook 'flyspell-buffer)
+  (defun flyspell-switch-dictionary()
+    (interactive)
+    (let* ((dic ispell-current-dictionary)
+           (change (if (string= dic "dansk") "english" "dansk")))
+      (ispell-change-dictionary change)
+      (message "Dictionary switched from %s to %s" dic change))))
