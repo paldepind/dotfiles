@@ -9,8 +9,8 @@
 
 (require 'package)
 (setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t)
 (add-to-list 'load-path "/usr/share/emacs/site-lisp")
 (package-initialize)
 
@@ -30,9 +30,13 @@
 
 (delete-selection-mode 1) ;; typed text replaces active selection-coding-system
 (setq-default indent-tabs-mode nil) ;; use spaces for indentation
+(show-paren-mode 1)
+(subword-mode 1)
 
 (global-set-key (kbd "<f9>") 'previous-buffer)
 (global-set-key (kbd "<f10>") 'next-buffer)
+(bind-keys
+ ("C-l" . imenu))
 
 (defun eval-and-replace ()
   "Replace the preceding sexp with its value."
@@ -76,9 +80,25 @@
                     :width 'normal)
 
 (setq color-themes '())
-(use-package color-theme-solarized
-  :config
-  (load-theme 'solarized t))
+
+(defun disable-all-themes ()
+  "Disable all activated color-themes."
+  (interactive)
+  (mapc #'disable-theme custom-enabled-themes))
+
+(defun set-theme (theme)
+  (interactive
+   (list
+    (intern (completing-read "Load custom theme: "
+                             (mapcar 'symbol-name
+                                     (custom-available-themes))))))
+  (disable-all-themes)
+  (load-theme theme t))
+
+(load-theme 'zenburn t)
+;; (use-package color-theme-solarized
+;;   :config
+;;   (load-theme 'solarized t))
 
 (use-package undo-tree
   :diminish ""
@@ -131,6 +151,7 @@
 
 ;; (define-key evil-insert-state-map (kbd "M-n") 'evil-force-normal-state)
 
+;; Let's us bind suff to C-m
 (define-key input-decode-map (kbd "C-m") (kbd "H-m"))
 (global-set-key (kbd "H-m") 'helm-mini)
 
@@ -147,7 +168,7 @@
   (global-set-key (kbd "C-x C-3") 'split-window-right)
   (global-set-key (kbd "C-x C-0") 'delete-window)
 
-
+  
   (defun god-toggle-on-overwrite ()
     "Toggle god-mode on overwrite-mode."
     (if (bound-and-true-p overwrite-mode)
@@ -157,14 +178,17 @@
   (add-hook 'composable-object-mode-hook 'god-toggle-on-overwrite))
 
 ;; Avy
-(defvar my-keys '(?a ?r ?s ?t ?d ?h ?n ?e ?i ?o))
 (use-package avy
   :bind (("C-," . avy-goto-char-2)
-         ("C-'" . avy-goto-char-in-line)
-         ("M-/" . avy-goto-char-timer)
-         ("M-n" . avy-goto-line-below)
-         ("M-p" . avy-goto-line-above))
+	 ("C-'" . avy-goto-char-in-line)
+	 ("M-/" . avy-goto-char-timer)
+	 ("M-n" . avy-goto-line-below)
+	 ("M-p" . avy-goto-line-above)
+         ("M-a" . avy-goto-word-1-above)
+         ("M-e" . avy-goto-word-1-below)
+         ("M-i" . avy-goto-line-above))
   :init
+  (defvar my-keys '(?a ?r ?s ?t ?d ?h ?n ?e ?i ?o ?k ?v ?m ?c))
   (setq avy-keys my-keys)
   (setq avy-all-windows nil)
   (setq avy-all-windows-alt 'all-frames)
@@ -181,21 +205,18 @@
   :init
   (require 'helm-config)
   :config
-  (setq helm-M-x-fuzzy-match 1)
-  ;; (setq helm-split-window-in-side-p t)
   (helm-autoresize-mode 1)
   (helm-mode 1)
   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
   (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
   (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
   :bind (("C-x C-f" . helm-find-files)
-         ("M-x" . helm-M-x)
-         ("C-x C-b" . helm-mini)))
+	 ("M-x" . helm-M-x)
+	 ("C-x C-b" . helm-mini)))
 
 (use-package yasnippet
-  :diminish yas-minor-mode
+  :diminish yas-minor-mode 
   :config
-  ;; (setq yas-verbosity 0)
   (push "~/.emacs.d/yasnippet-snippets" yas-snippet-dirs)
   (yas-global-mode 1))
 
@@ -252,11 +273,6 @@
     (projectile-global-mode)
     (helm-projectile-on)))
 
-;; (use-package whole-line-or-region
-;;   :diminish whole-line-or-region-mode
-;;   :config
-;;   (whole-line-or-region-mode 1))
-
 ;; circe
 (setq circe-network-options
       `(("Freenode"
@@ -265,18 +281,23 @@
 
 ;; Org mode
 (use-package org
+  :ensure org-plus-contrib
   :mode ("\\.org\\'" . org-mode)
   :config
   (define-key global-map "\C-ca" 'org-agenda) ; Global hotkey for opening agenda
   (add-to-list 'org-modules 'org-habit) ; Load the habbits module
+  (add-to-list 'org-modules 'org-drill) ; Load the drill module
   (org-clock-persistence-insinuate)
 
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
   (setq org-log-done t) ; Save time when task gets done
   (setq org-clock-persist 'history)
   (setq org-clock-into-drawer t)
   (setq org-src-fontify-natively t) ; Syntax highlighting for code blocks
   (add-hook 'org-mode-hook 'auto-fill-mode)
-  (add-hook 'org-mode-hook 'turn-on-org-cdlatex)
+  (use-package cdlatex
+    :init
+    (add-hook 'org-mode-hook 'turn-on-org-cdlatex))
   (setq org-highlight-latex-and-related '(latex script entities))
   (add-hook 'org-mode-hook 'flyspell-mode)
 
@@ -296,12 +317,12 @@
   :config
   (global-paren-face-mode 1))
 
+(electric-pair-mode)
 (use-package smartparens
   :defer t
-  :commands (smartparens-mode show-smartparens-mode)
+  ;; :commands (smartparens-mode show-smartparens-mode)
   :config
   (use-package smartparens-config :ensure nil)
-  (smartparens-global-strict-mode 1)
   :bind
   (("C-M-k" . sp-kill-sexp)
    ("C-M-f" . sp-forward-sexp)
@@ -361,7 +382,7 @@
                   (push-mark)
                   (goto-char (point-max)))))))
 
-;; (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+;; (atuoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'emacs-lisp-mode-hook 'smartparens-mode)
 
 ;; Haskell
@@ -381,9 +402,12 @@
   (require 'haskell-process)
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
 
-  (autoload 'ghc-init "ghc" nil t)
-  (autoload 'ghc-debug "ghc" nil t)
-  (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
+  (use-package intero
+    :init
+    (add-hook 'haskell-mode-hook 'intero-mode))
+  ;; (autoload 'ghc-init "ghc" nil t)
+  ;; (autoload 'ghc-debug "ghc" nil t)
+  ;; (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
 
   ;; (custom-set-variables
   (setq haskell-process-auto-import-loaded-modules t)
@@ -393,10 +417,32 @@
 
 
 ;; JavaScript
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-(add-hook 'js2-mode-hook (lambda ()
-                                  (setq js-indent-level 2
-                                        js2-basic-offset 2)))
+(use-package js2-mode
+  :mode ("\\.js\\'" . js2-mode)
+  :bind (("C-c n" . js2-next-error)
+         :map js2-mode-map
+         ("M-j" . nil))
+  :config
+  (setq js2-basic-offset 2
+        js2-bounce-indent-p t
+        js-indent-level 2)
+  ;; add tern IDE features in JavaScript
+  (use-package tern
+    :config
+    (add-hook 'js-mode-hook 'tern-mode)
+    ;; autocompletion
+    (use-package company-tern
+      :config (add-to-list 'company-backends 'company-tern)))
+  ;; Lots of handy refactor functions
+  (use-package js2-refactor
+    :diminish ""
+    :bind (:map js2-mode-map
+                ("C-)" . js2r-forward-slurp)
+                ("M-)" . js2r-forward-barf)
+                ("M-]" . js2r-unwrap))
+    :config
+    (js2r-add-keybindings-with-prefix "C-c C-m")
+    (add-hook 'js2-mode-hook #'js2-refactor-mode)))
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
@@ -424,17 +470,20 @@
 (use-package tide
   :commands (tide-setup))
 
-(setq TeX-auto-save t)
-(setq TeX-parse-self t)
-(setq-default TeX-master nil)
-(setq TeX-PDF-mode t)
-(add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+(use-package tex-site
+  :ensure auctex
+  :config
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t)
+  (setq-default TeX-master nil)
+  (setq TeX-PDF-mode t)
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode))
 
 ;; Java
 (add-hook 'java-mode-hook (lambda ()
-                            (setq c-basic-offset 4
-                                    tab-width 2
-                                    indent-tabs-mode nil)))
+			    (setq c-basic-offset 4
+				    tab-width 2
+				    indent-tabs-mode nil)))
 
 ;; Maxima
 ;;(add-to-list 'load-path "/usr/share/emacs/")
@@ -459,6 +508,12 @@
 (use-package markdown-mode
   :mode ("\\.md\\'" . markdown-mode)
   :config
+  (setq markdown-header-scaling t)
+  ;; (custom-set-faces
+  ;;  '(markdown-header-face ((t (:inherit font-lock-function-name-face :weight bold :family "variable-pitch"))))
+  ;;  '(markdown-header-face-1 ((t (:inherit markdown-header-face :height 1.8))))
+  ;;  '(markdown-header-face-2 ((t (:inherit markdown-header-face :height 1.4))))
+  ;;  '(markdown-header-face-3 ((t (:inherit markdown-header-face :height 1.2)))))
   (add-hook 'markdown-mode-hook 'flyspell-mode)
   (add-hook 'markdown-mode-hook 'auto-fill-mode))
 
@@ -472,7 +527,7 @@
   :load-path "~/projects/smart-comment"
   :bind ("M-;" . smart-comment))
 
-(use-package flyspell
+(use-package flyspell 
   :bind ("<f7>" . flyspell-switch-dictionary)
   :config
   (setq ispell-program-name "aspell"
