@@ -33,8 +33,8 @@
 (show-paren-mode 1)
 (subword-mode 1)
 
-(global-set-key (kbd "<f9>") 'previous-buffer)
-(global-set-key (kbd "<f10>") 'next-buffer)
+(global-set-key (kbd "<f9>") 'bs-cycle-previous)
+(global-set-key (kbd "<f10>") 'bs-cycle-next)
 (bind-keys
  ("C-l" . imenu))
 
@@ -49,6 +49,12 @@
            (insert (current-kill 0)))))
 
 (global-set-key (kbd "C-c e") 'eval-and-replace)
+
+;; Awesome Nyan cat
+(use-package nyan-mode
+  :config
+  (nyan-mode)
+  (nyan-toggle-wavy-trail))
 
 ;; scroll one line at a time (less "jumpy" than defaults)
 (use-package smooth-scrolling
