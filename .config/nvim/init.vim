@@ -49,6 +49,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 
 " Navigation
+Plug 'farmergreg/vim-lastplace' " Reopen files to last position
 Plug 'scrooloose/nerdtree'
 " Plug 'henrik/vim-indexed-search' " Shows number of matches with /
 Plug 'easymotion/vim-easymotion'
@@ -60,12 +61,12 @@ Plug 'majutsushi/tagbar'
 " # Editing
 " Plugins that aid in the insertion and changing of characters
 Plug 'tpope/vim-surround'
-" Plug 'raimondi/delimitmate' " automatically inserts matching quotes, parenthesis, etc.
 Plug 'jiangmiao/auto-pairs' " automatically inserts matching quotes, parenthesis, etc.
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'tpope/vim-surround'
 Plug 'SirVer/ultisnips'
 " Plug 'honza/vim-snippets'
+Plug 'terryma/vim-multiple-cursors'
 
 " General language plugins
 Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') } " Autocompletion
@@ -87,7 +88,7 @@ Plug 'Quramy/vim-js-pretty-template'
 
 " Typescript
 Plug 'HerringtonDarkholme/yats.vim'
-Plug 'mhartington/nvim-typescript'
+Plug 'mhartington/nvim-typescript', { 'branch': 'fix-121' }
 
 " Python
 Plug 'zchee/deoplete-jedi'
@@ -99,6 +100,16 @@ call plug#end()
 set termguicolors
 let g:gruvbox_italic=1
 colorscheme gruvbox
+
+" Comfortable motion
+" This config will scroll proportionally to the window height and was taken
+" from the readme.
+let g:comfortable_motion_no_default_key_mappings = 1
+let g:comfortable_motion_impulse_multiplier = 1  " Feel free to increase/decrease this value.
+nnoremap <silent> <C-d> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * 2)<CR>
+nnoremap <silent> <C-u> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * -2)<CR>
+nnoremap <silent> <C-f> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * 4)<CR>
+nnoremap <silent> <C-b> :call comfortable_motion#flick(g:comfortable_motion_impulse_multiplier * winheight(0) * -4)<CR>
 
 " Devicons and Airline
 let g:airline_powerline_fonts = 1
@@ -114,38 +125,32 @@ endif
 " UltiSnips
 
 let g:UltiSnipsSnippetsDir="~/.config/nvim/UltiSnips"
-let g:UltiSnipsSnippetDirectories=$HOME.'/.config/nvim/UltiSnips'
+let g:UltiSnipsSnippetDirectories=['UltiSnips']
+" let g:UltiSnipsSnippetDirectories=$HOME.'/.config/nvim/UltiSnips'
 
 let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-
-
-" delimitMate
-
-" let delimitMate_expand_cr = 1
-" let delimitMate_expand_space = 1
+let g:UltiSnipsJumpForwardTrigger="<M-n>"
+let g:UltiSnipsJumpBackwardTrigger="<M-p>"
 
 " Deoplete settings
 set completeopt-=preview
 let g:deoplete#enable_at_startup = 1
 call deoplete#custom#source('typescript', 'min_pattern_length', 1)
 let g:deoplete#auto_complete_delay = 0
-let g:deoplete#auto_refresh_delay = 20
 let g:echodoc_enable_at_startup=1
 
 " Ale configuration
 " Register the following fixers for the specified files
 let g:ale_fixers = {
 \   'typescript': ['prettier'],
-\   'javascript': ['prettier'],
 \   'python': ['yapf'],
 \}
+" \   'javascript': ['prettier'],
 
 " When fzf starts in a terminal buffer, hide the statusline of the containing buffer.
-autocmd! FileType fzf
-autocmd  FileType fzf set laststatus=0 noshowmode noruler
-  \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
+" autocmd! FileType fzf
+" autocmd  FileType fzf set laststatus=0 noshowmode noruler
+"   \| autocmd BufLeave <buffer> set laststatus=2 showmode ruler
 
 " Ale applies fixes on save
 let g:ale_fix_on_save = 1
