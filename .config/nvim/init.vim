@@ -13,6 +13,7 @@ set smartcase " the above setting is toggled of if the search word contains uppe
 
 set splitbelow " create new splits below and to the right
 set splitright
+let &t_ut='' " Fixis Kitty glitches
 
 tnoremap <Esc> <C-\><C-n>
 
@@ -31,16 +32,12 @@ endfunction
 
 " Appearence
 Plug 'bling/vim-airline'
-Plug 'tomasr/molokai'
-Plug 'altercation/vim-colors-solarized'
-Plug 'rakr/vim-two-firewatch'
 Plug 'morhetz/gruvbox'
 Plug 'mhinz/vim-startify'
+Plug 'yggdroot/indentline'
 
-" Plug 'ludovicchabant/vim-gutentags'
 Plug 'machakann/vim-highlightedyank'
 Plug '/usr/share/vim/vimfiles' " fzf's vim files are installed here by Arch
-Plug 'ctrlpvim/ctrlp.vim'
 Plug '/usr/local/opt/fzf' " fzf's vim files are installed here by Brew
 Plug 'junegunn/fzf.vim'
 
@@ -61,20 +58,20 @@ Plug 'majutsushi/tagbar'
 " # Editing
 " Plugins that aid in the insertion and changing of characters
 Plug 'tpope/vim-surround'
-Plug 'jiangmiao/auto-pairs' " automatically inserts matching quotes, parenthesis, etc.
+" Plug 'jiangmiao/auto-pairs' " automatically inserts matching quotes, parenthesis, etc.
 Plug 'ntpeters/vim-better-whitespace'
-Plug 'tpope/vim-surround'
 Plug 'SirVer/ultisnips'
 " Plug 'honza/vim-snippets'
 Plug 'terryma/vim-multiple-cursors'
 
+Plug 'junegunn/goyo.vim'
+Plug 'reedes/vim-pencil'
+
 " General language plugins
 Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') } " Autocompletion
 Plug 'shougo/echodoc.vim' " Display function signature in echo area
-Plug 'w0rp/ale' " General purposelinting
-Plug 'nathanaelkane/vim-indent-guides' " Shows indentation levels
+Plug 'w0rp/ale' " General purpose linting
 Plug 'janko-m/vim-test' " Runs test
-Plug 'scrooloose/nerdcommenter' " Comments code
 Plug 'tpope/vim-commentary' " More comments
 
 " Markdown
@@ -100,6 +97,8 @@ call plug#end()
 set termguicolors
 let g:gruvbox_italic=1
 colorscheme gruvbox
+
+let g:indentLine_char = '┆'
 
 " Comfortable motion
 " This config will scroll proportionally to the window height and was taken
@@ -161,6 +160,8 @@ let g:EasyMotion_smartcase = 1 " Turn on case insensitive feature
 " Markdown
 let g:vim_markdown_new_list_item_indent = 2 " indent with 2 spaces
 let g:vim_markdown_folding_disabled = 1 " vim-markdown has weird folding defaults
+let g:vim_markdown_conceal = 0
+let g:vim_markdown_math = 1
 
 " TypeScript
 let g:nvim_typescript#type_info_on_hold = 1
