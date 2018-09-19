@@ -23,6 +23,8 @@
 
 (use-package which-key)
 
+(electric-pair-mode)
+
 (use-package evil
   :init
   (setq evil-want-integration nil)
@@ -71,7 +73,7 @@
   :commands (helm-themes)
   )
 
-(add-to-list 'custom-theme-load-path "~/projects/white-paper-theme")
+(add-to-list 'custom-theme-load-path "~/.emacs/themes/white-paper-theme")
 
 ;; Awesome Nyan cat
 (use-package nyan-mode
@@ -104,10 +106,14 @@
   :custom
   (company-begin-commands '(self-insert-command))
   (company-idle-delay .1)
-  (company-minimum-prefix-length 2)
+  (company-minimum-prefix-length 1)
   (company-show-numbers t)
   (company-tooltip-align-annotations 't)
   (global-company-mode t))
+
+(use-package flycheck
+  :config
+  (global-flycheck-mode))
 
 (use-package magit
   :bind ("<f8>" . magit-status))
@@ -127,6 +133,7 @@
   (TeX-clean-confirm nil)
   (TeX-master 'dwim)
   (TeX-parse-self t)
+  (TeX-electric-math t)
   (TeX-electric-sub-and-superscript t)
   (TeX-source-correlate-mode t)
   (prettify-symbols-unprettify-at-point t))
@@ -160,13 +167,14 @@
 
 (use-package tide
   :after (typescript-mode company flycheck)
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)))
+  :hook (typescript-mode . (lambda ()
+			     (tide-setup)
+			     (tide-hl-identifier-mode))))
 
 (use-package indium)
 
 (use-package yasnippet
-  :diminish
+  :diminish yas-minor-mode
   :config
   (yas-global-mode 1))
 

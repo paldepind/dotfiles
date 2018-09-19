@@ -149,7 +149,7 @@
    `(clojure-special ((,class (:foreground ,blue))))
    `(clojure-java-call ((,class (:foreground ,purple))))
    ;; Rainbow-delimiters
-   `(rainbow-delimiters-depth-1-face ((,class (:foreground ,"#e91e63"))))
+   `(rainbow-delimiters-depth-1-face ((,class (:foreground ,faded))))
    `(rainbow-delimiters-depth-2-face ((,class (:foreground ,"#1565C0"))))
    `(rainbow-delimiters-depth-3-face ((,class (:foreground ,"#EF6C00"))))
    `(rainbow-delimiters-depth-4-face ((,class (:foreground ,"#B388FF"))))
@@ -207,9 +207,9 @@
    `(linum-highlight-face ((,class (:background ,current-line :foreground ,foreground))))
    `(border ((,class (:background ,current-line))))
    `(vertical-border ((,class (:background ,selection
-                                           :foreground, selection))))
+                                           :foreground ,selection))))
    `(border-glyph ((,class (nil))))
-   `(highlight ((,class (:inverse-video nil :background ,current-line))))
+   `(highlight ((,class (:inverse-video nil :foreground ,foreground :background ,current-line))))
    `(hl-line ((,class (:inverse-video nil :background ,current-line))))
    `(gui-element ((,class (:background ,current-line :foreground ,foreground))))
    `(mode-line ((,class (:foreground ,foreground :background ,mode-line-background
