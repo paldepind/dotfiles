@@ -15,19 +15,22 @@
 (eval-when-compile
   (require 'use-package))
 
-(use-package gruvbox-theme
-  :config
-  (load-theme 'gruvbox-light-medium t))
+(use-package gruvbox-theme)
 
-(set-default-font "IBM Plex Mono")
+(use-package helm-themes
+  :commands (helm-themes))
+
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/white-paper-theme")
+(load-theme 'white-paper)
+
+(set-frame-font "IBM Plex Mono")
 
 (use-package which-key)
 
-(electric-pair-mode)
-
 (use-package evil
   :init
-  (setq evil-want-integration nil)
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
   :config
   (evil-mode 1))
 
@@ -35,6 +38,18 @@
   :after evil
   :config
   (evil-collection-init))
+
+(use-package evil-commentary
+  :config
+  (evil-commentary-mode))
+
+(use-package telephone-line
+  :config
+  (telephone-line-mode 1))
+
+(use-package rainbow-delimiters
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
 
 (setq-default fill-column 80)
 
@@ -59,6 +74,9 @@
     "m" 'helm-mini
     "w" 'save-buffer))
 
+(use-package prettier-js
+  :hook (typescript-mode . prettier-js-mode))
+
 (use-package helm
   :config
   (helm-mode 1)
@@ -69,11 +87,12 @@
 	 ("M-x" . helm-M-x)
          ("C-x C-b" . helm-mini)))
 
-(use-package helm-themes
-  :commands (helm-themes)
-  )
-
-(add-to-list 'custom-theme-load-path "~/.emacs/themes/white-paper-theme")
+; (electric-pair-mode)
+(use-package smartparens
+  :config
+  (require 'smartparens-config)
+  (smartparens-global-mode t)
+  (show-smartparens-global-mode t))
 
 ;; Awesome Nyan cat
 (use-package nyan-mode
@@ -100,6 +119,11 @@
   :bind-keymap
   ("C-c p" . projectile-command-map))
 
+(use-package helm-projectile
+  :config
+  (setq projectile-completion-system 'helm
+	projectile-switch-project-action 'helm-projectile))
+
 (use-package company
   :defer 2
   :diminish
@@ -122,10 +146,18 @@
   :init
   (global-git-gutter-mode +1))
 
+(use-package flyspell
+  :diminish
+  :commands flyspell-mode
+  :custom
+  (ispell-program-name "aspell")
+  :hook (LaTeX-mode . flyspell-mode))
+
 (use-package tex
   :ensure auctex
   :hook ((LaTeX-mode . reftex-mode)
-	 (LaTeX-mode . prettify-symbols-mode))
+	 (LaTeX-mode . prettify-symbols-mode)
+	 (LaTeX-mode . (lambda () (define-key LaTeX-mode-map (kbd "$") 'self-insert-command))))
   :custom
   (TeX-PDF-mode t) ; PDF mode instead of DVI
   (TeX-auto-save t)
@@ -158,6 +190,9 @@
 (use-package sbt-mode)
 (use-package scala-mode)
 
+(use-package json-mode
+  :mode "\\.json\\'")
+
 ;; TypeScript
 
 (use-package typescript-mode
@@ -171,6 +206,20 @@
 			     (tide-setup)
 			     (tide-hl-identifier-mode))))
 
+(use-package web-mode
+  :mode "\\.tsx\\'"
+  :config
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-code-indent-offset 2)
+  (add-hook 'web-mode-hook
+            (lambda ()
+              (when (string-equal "tsx" (file-name-extension buffer-file-name))
+                (tide-setup)
+                (flycheck-mode +1)
+                (setq flycheck-check-syntax-automatically '(save mode-enabled))
+                (eldoc-mode +1)
+		(company-mode-on)))))
+
 (use-package indium)
 
 (use-package yasnippet
@@ -178,19 +227,27 @@
   :config
   (yas-global-mode 1))
 
+(use-package multiple-cursors)
+
+(use-package keym
+  :ensure nil
+  :load-path "~/.emacs.d/keym/"
+  :commands keym-mode)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(TeX-PDF-mode t)
- '(TeX-auto-save t)
- '(TeX-byte-compile t)
- '(TeX-clean-confirm nil)
- '(TeX-electric-sub-and-superscript t)
- '(TeX-master (quote dwim))
- '(TeX-parse-self t)
- '(TeX-source-correlate-mode t)
+ '(TeX-PDF-mode t t)
+ '(TeX-auto-save t t)
+ '(TeX-byte-compile t t)
+ '(TeX-clean-confirm nil t)
+ '(TeX-electric-math t t)
+ '(TeX-electric-sub-and-superscript t t)
+ '(TeX-master (quote dwim) t)
+ '(TeX-parse-self t t)
+ '(TeX-source-correlate-mode t t)
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
  '(company-begin-commands (quote (self-insert-command)))
@@ -198,12 +255,17 @@
  '(company-minimum-prefix-length 2)
  '(company-show-numbers t)
  '(company-tooltip-align-annotations t)
+ '(custom-safe-themes
+   (quote
+    ("5e7fa06a700480ea1e5d86bec316cc07a009cfeb506e6e051fd014c500c5029b" default)))
  '(fci-rule-color "#171717")
  '(global-company-mode t)
  '(global-font-lock-mode t)
+ '(ispell-program-name "aspell")
+ '(nyan-wavy-trail t)
  '(package-selected-packages
    (quote
-    (nyan-mode rainbow-delimiters material-theme tao-theme basic-theme spacemacs-theme minimal-theme white-theme tide typescript-mode which-key use-package solarized-theme moody magit helm-themes helm-projectile gruvbox-theme general evil-collection ensime dashboard company-math company-box company-auctex cdlatex)))
+    (telephone-line helm-rg json-mode smartparens nyan-mode rainbow-delimiters material-theme tao-theme basic-theme spacemacs-theme minimal-theme white-theme tide typescript-mode which-key use-package solarized-theme moody magit helm-themes helm-projectile gruvbox-theme general evil-collection ensime dashboard company-math company-box company-auctex cdlatex)))
  '(pdf-view-midnight-colors (quote ("#655370" . "#fbf8ef")))
  '(prettify-symbols-unprettify-at-point t)
  '(vc-annotate-background "#0E0E0E")

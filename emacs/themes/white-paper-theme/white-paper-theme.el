@@ -66,9 +66,9 @@
    `(font-lock-comment-delimiter-face ((,class (:foreground ,comment))))
    `(font-lock-comment-face ((,class (:foreground ,comment, :slant italic))))
    `(font-lock-constant-face ((,class (:foreground ,green))))
-   `(font-lock-doc-face ((,class (:foreground "#673ab7"))))
+   `(font-lock-doc-face ((,class (:foreground ,comment, :slant italic))))
    `(font-lock-doc-string-face ((,class (:foreground ,yellow))))
-   `(font-lock-function-name-face ((,class (:foreground ,"#0097A7"))))
+   `(font-lock-function-name-face ((,class (:foreground ,foreground :weight bold))))
    `(font-lock-keyword-face ((,class (:foreground ,faded))))
    `(font-lock-negation-char-face ((,class (:foreground ,blue))))
    `(font-lock-preprocessor-face ((,class (:foreground ,yellow))))
@@ -76,7 +76,7 @@
    `(font-lock-regexp-grouping-construct ((,class (:foreground ,purple))))
    `(font-lock-string-face ((,class (:foreground ,foreground))))
    `(font-lock-type-face ((,class (:foreground "#0097A7"))))
-   `(font-lock-variable-name-face ((,class (:foreground ,"#EF6C00"))))
+   `(font-lock-variable-name-face ((,class (:foreground ,foreground :slant italic))))
    `(font-lock-warning-face ((,class (:weight bold :foreground ,red))))
    `(highlight-numbers-number ((,class (:foreground ,"#689f38"))))
    `(shadow ((,class (:foreground ,comment))))
@@ -85,14 +85,10 @@
    `(warning ((,class (:foreground ,orange))))
 
    ;; ace-window faces
-   `(aw-leading-char-face ((,class (:foreground ,
-                                    background
-                                    :background ,
-                                    green
-                                    :height ,
-                                    1.7
-                                    :weight
-                                    bold))))
+   `(aw-leading-char-face ((,class (:foreground ,background
+                                    :background ,green
+                                    :height ,1.7
+                                    :weight bold))))
 
    ;; ace-jump-faces
    `(ace-jump-face-foreground ((,class (:foreground ,background
@@ -150,14 +146,14 @@
    `(clojure-java-call ((,class (:foreground ,purple))))
    ;; Rainbow-delimiters
    `(rainbow-delimiters-depth-1-face ((,class (:foreground ,faded))))
-   `(rainbow-delimiters-depth-2-face ((,class (:foreground ,"#1565C0"))))
-   `(rainbow-delimiters-depth-3-face ((,class (:foreground ,"#EF6C00"))))
-   `(rainbow-delimiters-depth-4-face ((,class (:foreground ,"#B388FF"))))
-   `(rainbow-delimiters-depth-5-face ((,class (:foreground ,"#76ff03"))))
-   `(rainbow-delimiters-depth-6-face ((,class (:foreground ,"#26A69A"))))
-   `(rainbow-delimiters-depth-7-face ((,class (:foreground ,"#B71C1C"))))
-   `(rainbow-delimiters-depth-8-face ((,class (:foreground ,"#795548"))))
-   `(rainbow-delimiters-depth-9-face ((,class (:foreground ,"#827717"))))
+   `(rainbow-delimiters-depth-2-face ((,class (:foreground ,faded))))
+   `(rainbow-delimiters-depth-3-face ((,class (:foreground ,faded))))
+   `(rainbow-delimiters-depth-4-face ((,class (:foreground ,faded))))
+   `(rainbow-delimiters-depth-5-face ((,class (:foreground ,faded))))
+   `(rainbow-delimiters-depth-6-face ((,class (:foreground ,faded))))
+   `(rainbow-delimiters-depth-7-face ((,class (:foreground ,faded))))
+   `(rainbow-delimiters-depth-8-face ((,class (:foreground ,faded))))
+   `(rainbow-delimiters-depth-9-face ((,class (:foreground ,faded))))
    `(rainbow-delimiters-unmatched-face ((,class (:foreground ,foreground :background ,"#EF6C00"))))
 
    ;; MMM-mode
