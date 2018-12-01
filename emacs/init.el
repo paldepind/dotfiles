@@ -1,3 +1,9 @@
+(when window-system
+  (menu-bar-mode -1) ; Disable the menu bar
+  (scroll-bar-mode -1) ; Disable the scroll bar
+  (tool-bar-mode -1) ; Disable the tool bar
+  (tooltip-mode -1)) ; Disable the tooltips
+
 (setq package-archives
       '(("gnu" . "https://elpa.gnu.org/packages/")
         ("melpa" . "https://melpa.org/packages/")
@@ -15,15 +21,39 @@
 (eval-when-compile
   (require 'use-package))
 
-(use-package gruvbox-theme)
+;; Changes to defaults
+;; Nicer scrolling
+(setq mouse-wheel-scroll-amount '(2 ((shift) . 2) ((control) . nil))) 
+(setq mouse-wheel-progressive-speed nil)
 
-(use-package helm-themes
-  :commands (helm-themes))
+(use-package gruvbox-theme)
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/white-paper-theme")
 (load-theme 'white-paper)
 
 (set-frame-font "IBM Plex Mono")
+
+(use-package ripgrep)
+
+(use-package diminish)
+
+(use-package ivy)
+
+(use-package counsel
+  :bind ("M-x" . counsel-M-x)
+  :commands (counsel-M-x))
+
+(use-package all-the-icons)
+
+(use-package all-the-icons-ivy
+  :ensure t
+  :config
+  (all-the-icons-ivy-setup))
+
+;; (use-package doom-modeline
+;;   :ensure t
+;;   :defer t
+;;   :hook (after-init . doom-modeline-init))
 
 (use-package which-key)
 
@@ -43,21 +73,24 @@
   :config
   (evil-commentary-mode))
 
-(use-package telephone-line
-  :config
-  (telephone-line-mode 1))
+;; (use-package telephone-line
+;;   :config
+;;   (telephone-line-mode 1))
+
+(use-package doom-modeline
+      :ensure t
+      :defer t
+      :hook (after-init . doom-modeline-init))
+
+(use-package neotree
+  :custom
+  (neo-theme (if (display-graphic-p) 'icons 'arrow)))
 
 (use-package rainbow-delimiters
   :hook
   (prog-mode . rainbow-delimiters-mode))
 
 (setq-default fill-column 80)
-
-(when window-system
-  (menu-bar-mode -1) ; Disable the menu bar
-  (scroll-bar-mode -1) ; Disable the scroll bar
-  (tool-bar-mode -1) ; Disable the tool bar
-  (tooltip-mode -1)) ; Disable the tooltips
 
 ;; This package automatically copies environment variables (in particular PATH)
 ;; from the shell into Emacs.
@@ -72,6 +105,7 @@
   (nmap
     :prefix "SPC"
     "m" 'helm-mini
+    "l" 'helm-imenu
     "w" 'save-buffer))
 
 (use-package prettier-js
@@ -84,8 +118,11 @@
   (define-key helm-map (kbd "<tab>") #'helm-execute-persistent-action)
   (define-key helm-map (kbd "C-z") #'helm-select-action)
   :bind (("C-x C-f" . helm-find-files)
-	 ("M-x" . helm-M-x)
+	 ;; ("M-x" . helm-M-x)
          ("C-x C-b" . helm-mini)))
+
+(use-package helm-themes
+  :commands (helm-themes))
 
 ; (electric-pair-mode)
 (use-package smartparens
@@ -95,11 +132,11 @@
   (show-smartparens-global-mode t))
 
 ;; Awesome Nyan cat
-(use-package nyan-mode
-  :custom
-  (nyan-wavy-trail t)
-  :config
-  (nyan-mode))
+;; (use-package nyan-mode
+;;   :custom
+;;   (nyan-wavy-trail t)
+;;   :config
+;;   (nyan-mode))
 
 (use-package dashboard
   :config
@@ -109,6 +146,7 @@
   (dashboard-setup-startup-hook))
 
 (use-package projectile
+  :diminish
   :config
   (projectile-mode +1)
   ;; (use-package helm-projectile
@@ -135,6 +173,11 @@
   (company-tooltip-align-annotations 't)
   (global-company-mode t))
 
+(use-package company-flx
+  :after company
+  :config
+  (company-flx-mode +1))
+
 (use-package flycheck
   :config
   (global-flycheck-mode))
@@ -143,6 +186,7 @@
   :bind ("<f8>" . magit-status))
 
 (use-package git-gutter
+  :diminish
   :init
   (global-git-gutter-mode +1))
 
@@ -184,6 +228,13 @@
 
 (use-package company-math :after (auctex company))
 
+(use-package markdown-mode
+  :mode ("\\.md\\'" . markdown-mode)
+  :config
+  (setq markdown-header-scaling t)
+  (add-hook 'markdown-mode-hook 'flyspell-mode)
+  (add-hook 'markdown-mode-hook 'auto-fill-mode))
+
 ;; Scala
 
 (use-package ensime)
@@ -191,20 +242,21 @@
 (use-package scala-mode)
 
 (use-package json-mode
-  :mode "\\.json\\'")
+  :mode "\\.json\\'"
+  :custom
+  (js-indent-level 2))
 
 ;; TypeScript
 
 (use-package typescript-mode
   :mode "\\.ts\\'"
-  :config
-  (setq typescript-indent-level 2))
+  :custom
+  (typescript-indent-level 2))
 
 (use-package tide
   :after (typescript-mode company flycheck)
-  :hook (typescript-mode . (lambda ()
-			     (tide-setup)
-			     (tide-hl-identifier-mode))))
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)))
 
 (use-package web-mode
   :mode "\\.tsx\\'"
@@ -220,6 +272,16 @@
                 (eldoc-mode +1)
 		(company-mode-on)))))
 
+(use-package purescript-mode
+  :mode "\\.purs\\'"
+  :config
+  (add-hook 'purescript-mode-hook
+	    (lambda ()
+	      (turn-on-purescript-indentation))))
+
+(use-package psc-ide
+  :hook (purescript-mode . psc-ide-mode))
+
 (use-package indium)
 
 (use-package yasnippet
@@ -229,10 +291,25 @@
 
 (use-package multiple-cursors)
 
-(use-package keym
+(use-package keyano
   :ensure nil
-  :load-path "~/.emacs.d/keym/"
-  :commands keym-mode)
+  :load-path "~/projects/keyano/")
+
+;; From https://stackoverflow.com/questions/384284/how-do-i-rename-an-open-file-in-emacs
+(defun rename-file-and-buffer (new-name)
+  "Renames both current buffer and file it's visiting to NEW-NAME."
+  (interactive "sNew name: ")
+  (let ((name (buffer-name))
+        (filename (buffer-file-name)))
+    (if (not filename)
+        (message "Buffer '%s' is not visiting a file!" name)
+      (if (get-buffer new-name)
+          (message "A buffer named '%s' already exists!" new-name)
+        (progn
+          (rename-file filename new-name 1)
+          (rename-buffer new-name)
+          (set-visited-file-name new-name)
+          (set-buffer-modified-p nil))))))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -257,17 +334,20 @@
  '(company-tooltip-align-annotations t)
  '(custom-safe-themes
    (quote
-    ("5e7fa06a700480ea1e5d86bec316cc07a009cfeb506e6e051fd014c500c5029b" default)))
+    ("0630e7487d7eec3b83711a70c0055fb63f8630e67476c3ab8b22d83efd9b24fa" "8298b72adbc1f87eb9700f863c675361ea38c1cceccaf0072d2e2b137721da15" "5e7fa06a700480ea1e5d86bec316cc07a009cfeb506e6e051fd014c500c5029b" default)))
  '(fci-rule-color "#171717")
  '(global-company-mode t)
  '(global-font-lock-mode t)
  '(ispell-program-name "aspell")
+ '(js-indent-level 2)
+ '(neo-theme (quote icons))
  '(nyan-wavy-trail t)
  '(package-selected-packages
    (quote
-    (telephone-line helm-rg json-mode smartparens nyan-mode rainbow-delimiters material-theme tao-theme basic-theme spacemacs-theme minimal-theme white-theme tide typescript-mode which-key use-package solarized-theme moody magit helm-themes helm-projectile gruvbox-theme general evil-collection ensime dashboard company-math company-box company-auctex cdlatex)))
+    (color-theme-sanityinc-solarized avy diminish doom-themes all-the-icons telephone-line helm-rg json-mode smartparens nyan-mode rainbow-delimiters material-theme tao-theme basic-theme spacemacs-theme minimal-theme white-theme tide typescript-mode which-key use-package solarized-theme moody magit helm-themes helm-projectile gruvbox-theme general evil-collection ensime dashboard company-math company-box company-auctex cdlatex)))
  '(pdf-view-midnight-colors (quote ("#655370" . "#fbf8ef")))
  '(prettify-symbols-unprettify-at-point t)
+ '(typescript-indent-level 2 t)
  '(vc-annotate-background "#0E0E0E")
  '(vc-annotate-color-map
    (quote
