@@ -6,11 +6,15 @@ alias sus='systemctl suspend'
 alias shut='systemctl poweroff'
 alias lu='light -U 10'
 alias la='light -A 10'
+alias cat='bat'
+alias l='exa'
 abbr -a g git
 abbr -a gs 'git status'
 
 set -x ANDROID_HOME /home/simon/Android/Sdk
 set -x EDITOR nvim
+set -x PASSWORD_STORE_DIR /home/simon/Dropbox/password-store
+set -x BAT_THEME OneHalfLight
 set -x PASSWORD_STORE_DIR /home/simon/Dropbox/password-store
 
 # function fish_prompt
