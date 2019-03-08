@@ -7,10 +7,13 @@ set tabstop=2
 set fillchars=vert:\│ " makes vertical lines a pretty unbroken line
 set noshowmode
 set wildmode=list:longest,full
+set nojoinspaces " Prefer a single space after `.`, `?`, etc.
+
+set spell spelllang=en_us " Turn on spell checking
 
 set ignorecase " /, ? and friends are case insensitive
 set smartcase " the above setting is toggled of if the search word contains upper-case caracters
-set inccommand=split
+set inccommand="nosplit"
 
 set hidden " Hidden buffers are preserved
 
@@ -20,7 +23,8 @@ set splitbelow " create new splits below and to the right
 set splitright
 map Y y$ " Make Y yank to end of line
 
-set guifont=Fira\ Code:h10
+set guifont=Fira_Code:h10
+
 
 tnoremap <Esc> <C-\><C-n>
 
@@ -78,21 +82,21 @@ Plug 'ntpeters/vim-better-whitespace'
 Plug 'SirVer/ultisnips'
 Plug 'wellle/targets.vim'
 
-" Prose
-Plug 'junegunn/goyo.vim'
+" For prose
 let g:goyo_height = '100%'
+Plug 'junegunn/goyo.vim'
 Plug 'reedes/vim-pencil'
 
 " General language plugins
-" Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') } " Autocompletion
+Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') } " Autocompletion
 Plug 'shougo/echodoc.vim' " Display function signature in echo area
 Plug 'w0rp/ale' " General purpose linting
-" Plug 'janko-m/vim-test' " Runs test
+Plug 'janko-m/vim-test' " Runs test
 Plug 'tpope/vim-commentary' " More comments
 
 " Markdown
-" Plug 'godlygeek/tabular'
-" Plug 'plasticboy/vim-markdown'
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
 
 " HTML/CSS
@@ -102,6 +106,7 @@ Plug 'digitaltoad/vim-pug'
 " Javascript
 Plug 'pangloss/vim-javascript'
 let g:javascript_plugin_jsdoc = 1
+
 Plug 'Quramy/vim-js-pretty-template'
 
 " Typescript
