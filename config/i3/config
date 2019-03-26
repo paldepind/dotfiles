@@ -37,7 +37,8 @@ bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
 # bindsym $mod+s exec dmenu_run
-bindsym $mod+s exec rofi -theme gruvbox-light -show drun
+bindsym $mod+s exec rofi -theme gruvbox-light -show combi -combi-modi drun -modi combi
+# bindsym $mod+s exec rofi -combi-modi window,drun -show combi -modi combi
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
@@ -164,12 +165,60 @@ mode "resize" {
 
 bindsym $mod+p mode "resize"
 
-# Start i3bar to display a workspace bar (plus the system information i3status
+#######
+#THEME#
+#######
+
+# set primary gruvbox colorscheme colors
+set $bg #282828
+set $red #cc241d
+set $green #98971a
+set $yellow #d79921
+set $blue #458588
+set $purple #b16286
+set $aqua #689d68
+set $gray #a89984
+set $darkgray #1d2021
+
+# Start i3bar to display a workspace bar (plus the system information i3blocks
 # finds out, if available)
 bar {
-        mode hide
-        status_command i3status
+    font pango:Source Sans Pro 11
+    mode hide
+    position bottom
+    status_command i3blocks
+    colors {
+        # bar background color
+        background $bg
+        # text color used for blocks that do not have a color specified.
+        statusline $yellow
+        # workspaces section
+        #                    border  backgr. text
+        focused_workspace    $aqua $aqua $darkgray
+        inactive_workspace   $darkgray $darkgray $yellow
+        active_workspace     $darkgray $darkgray $yellow
+        urgent_workspace     $red $red $bg
+    }
 }
+#end of bar section
+
+#start of window title bars & borders section
+
+# green gruvbox
+# class                 border|backgr|text|indicator|child_border
+#client.focused          $green $green $darkgray $purple $darkgray
+#client.focused_inactive $darkgray $darkgray $yellow $purple $darkgray
+#client.unfocused        $darkgray $darkgray $yellow $purple $darkgray
+#client.urgent           $red $red $white $red $red
+
+# blue gruvbox
+# class                 border|backgr|text|indicator|child_border
+client.focused          $blue $blue $darkgray $purple $darkgray
+client.focused_inactive $darkgray $darkgray $yellow $purple $darkgray
+client.unfocused        $darkgray $darkgray $yellow $purple $darkgray
+client.urgent           $red $red $white $red $red
+
+#end of window title bars & borders section
 
 # Pulse Audio controls
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5% #increase sound volume
@@ -177,8 +226,8 @@ bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5% #d
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle # mute sound
 
 # Sreen brightness controls
-bindsym XF86MonBrightnessUp exec light -A 10 # increase screen brightness
-bindsym XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
+bindsym XF86MonBrightnessUp exec xbacklight -inc 3 # increase screen brightness
+bindsym XF86MonBrightnessDown exec xbacklight -dec 3 # decrease screen brightness
 
 # Media player controls
 bindsym XF86AudioPlay exec playerctl play
@@ -187,9 +236,11 @@ bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
 # Autostart
-exec xrandr --dpi 144
+exec xrandr --dpi 124
 # exec xrandr --dpi 96
 
 exec --no-startup-id nm-applet
 exec --no-startup-id dunst
-exec --no-startup-id lxqt-powermanagement
+exec --no-startup-id "redshift -l 55.7:12.6 -t 5700:3600 -g 0.8 -m randr -v"
+exec --no-startup-id xbanish
+# exec --no-startup-id lxqt-powermanagement
