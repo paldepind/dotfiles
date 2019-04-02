@@ -5,12 +5,9 @@
   (tooltip-mode -1)) ; Disable the tooltips
 
 (setq package-archives
-      '(("gnu" . "https://elpa.gnu.org/packages/")
-        ("melpa" . "https://melpa.org/packages/")
+      '(("gnu" . "http://elpa.gnu.org/packages/")
+        ("melpa" . "http://melpa.org/packages/")
 	("org" . "http://orgmode.org/elpa/")))
-
-; use-package install's packages automatically
-(setq use-package-always-ensure t)
 
 (package-initialize)
 
@@ -21,17 +18,25 @@
 (eval-when-compile
   (require 'use-package))
 
+;; use-package install's packages automatically
+(setq use-package-always-ensure t)
+
 ;; Changes to defaults
 ;; Nicer scrolling
 (setq mouse-wheel-scroll-amount '(2 ((shift) . 2) ((control) . nil))) 
 (setq mouse-wheel-progressive-speed nil)
 
-(use-package gruvbox-theme)
+(use-package gruvbox-theme
+  :config
+  (load-theme 'gruvbox-light-medium t))
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/white-paper-theme")
-(load-theme 'white-paper)
+;; (load-theme 'white-paper t)
 
-(set-frame-font "IBM Plex Mono")
+(set-frame-font "Fira Code")
+
+(set-fontset-font "fontset-default" nil 
+                  (font-spec :size 20 :name "Noto Sans Symbols"))
 
 (use-package ripgrep)
 
@@ -59,6 +64,7 @@
 
 (use-package evil
   :init
+  (setq evil-want-abbrev-expand-on-insert-exit nil)
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
   :config
@@ -80,7 +86,7 @@
 (use-package doom-modeline
       :ensure t
       :defer t
-      :hook (after-init . doom-modeline-init))
+      :hook (after-init . doom-modeline-mode))
 
 (use-package neotree
   :custom
@@ -291,9 +297,18 @@
 
 (use-package multiple-cursors)
 
-(use-package keyano
-  :ensure nil
-  :load-path "~/projects/keyano/")
+;; (use-package keyano
+;;   :ensure nil
+;;   :load-path "~/projects/keyano/")
+
+;; ** Coq
+(use-package proof-general
+  :mode ("\\.v\\'" . coq-mode)
+  :init (custom-set-variables '(coq-prog-name "~/.opam/default/bin/coqtop") ))
+
+(use-package company-coq
+  :config
+  (add-hook 'coq-mode-hook #'company-coq-mode))
 
 ;; From https://stackoverflow.com/questions/384284/how-do-i-rename-an-open-file-in-emacs
 (defun rename-file-and-buffer (new-name)
@@ -332,6 +347,7 @@
  '(company-minimum-prefix-length 2)
  '(company-show-numbers t)
  '(company-tooltip-align-annotations t)
+ '(coq-prog-name "~/.opam/default/bin/coqtop")
  '(custom-safe-themes
    (quote
     ("0630e7487d7eec3b83711a70c0055fb63f8630e67476c3ab8b22d83efd9b24fa" "8298b72adbc1f87eb9700f863c675361ea38c1cceccaf0072d2e2b137721da15" "5e7fa06a700480ea1e5d86bec316cc07a009cfeb506e6e051fd014c500c5029b" default)))
