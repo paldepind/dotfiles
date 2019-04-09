@@ -128,6 +128,7 @@ call plug#end()
 set termguicolors
 let g:gruvbox_italic=1
 colorscheme gruvbox
+set background=light
 
 let g:indentLine_char = '┆'
 
