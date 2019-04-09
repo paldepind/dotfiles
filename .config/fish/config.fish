@@ -1,4 +1,4 @@
-set PATH /home/simon/.local/bin /home/simon/.npm-packages/bin /home/simon/.cabal/bin /home/simon/.gem/ruby/2.4.0/bin $PATH
+set PATH /home/simon/.local/bin /home/simon/.npm-packages/bin /home/simon/.cabal/bin /home/simon/.gem/ruby/2.5.0/bin $PATH
 
 alias b='upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -E "state|time\ to\ full|percentage"'
 alias t='date'
@@ -6,11 +6,19 @@ alias sus='systemctl suspend'
 alias shut='systemctl poweroff'
 alias lu='light -U 10'
 alias la='light -A 10'
+alias cat='bat'
+alias l='exa'
+abbr -a g git
+abbr -a gs 'git status'
 
 set -x ANDROID_HOME /home/simon/Android/Sdk
+set -x EDITOR nvim
+set -x PASSWORD_STORE_DIR /home/simon/Dropbox/password-store
+set -x BAT_THEME OneHalfLight
+set -x PASSWORD_STORE_DIR /home/simon/Dropbox/password-store
 
 # function fish_prompt
-#  ~/bin/powerline-shell/powerline-shell.py $status --shell bare ^/dev/null
+  # powerline-shell --shell bare $status
 # end
 
 # begin
