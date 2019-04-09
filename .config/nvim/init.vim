@@ -7,6 +7,9 @@ set tabstop=2
 set fillchars=vert:\│ " makes vertical lines a pretty unbroken line
 set noshowmode
 set wildmode=list:longest,full
+set nojoinspaces " Prefer a single space after `.`, `?`, etc.
+
+set spell spelllang=en_us " Turn on spell checking
 
 set ignorecase " /, ? and friends are case insensitive
 set smartcase " the above setting is toggled of if the search word contains upper-case caracters
@@ -18,12 +21,10 @@ set cursorline " Highlight current line
 
 set splitbelow " create new splits below and to the right
 set splitright
-let &t_ut='' " Fixis Kitty glitches
-map Y y$ " Make
-let g:Guifont="Source Code Pro:h10"
-if exists('g:GuiLoaded')
-  Guifont Source Code Pro:h10
-endif
+map Y y$ " Make Y yank to end of line
+
+set guifont=Fira_Code:h10
+
 
 tnoremap <Esc> <C-\><C-n>
 
@@ -44,7 +45,7 @@ endfunction
 Plug 'bling/vim-airline'
 Plug 'morhetz/gruvbox'
 Plug 'mhinz/vim-startify'
-Plug 'yggdroot/indentline'
+" Plug 'yggdroot/indentline'
 
 Plug 'machakann/vim-highlightedyank'
 Plug '/usr/share/vim/vimfiles' " fzf's vim files are installed here by Arch Linux
@@ -55,6 +56,7 @@ Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-rhubarb'
+Plug 'jreybert/vimagit'
 
 " Navigation
 Plug 'farmergreg/vim-lastplace' " Reopen files to last position
@@ -78,9 +80,10 @@ Plug 'machakann/vim-sandwich'
 Plug 'jiangmiao/auto-pairs' " automatically inserts matching quotes, parenthesis, etc.
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'SirVer/ultisnips'
-" Plug 'honza/vim-snippets'
-Plug 'terryma/vim-multiple-cursors'
+Plug 'wellle/targets.vim'
 
+" For prose
+let g:goyo_height = '100%'
 Plug 'junegunn/goyo.vim'
 Plug 'reedes/vim-pencil'
 
@@ -94,31 +97,145 @@ Plug 'tpope/vim-commentary' " More comments
 " Markdown
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
 
 " HTML/CSS
 Plug 'mustache/vim-mustache-handlebars'
 Plug 'digitaltoad/vim-pug'
 
 " Javascript
-" Plug 'othree/yajs.vim'
 Plug 'pangloss/vim-javascript'
 let g:javascript_plugin_jsdoc = 1
 
 Plug 'Quramy/vim-js-pretty-template'
 
 " Typescript
+Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
+
+" Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+" begin COC dump
+
+" if hidden not set, TextEdit might fail.
+set hidden
+
+" Better display for messages
+" set cmdheight=2
+
+" Smaller updatetime for CursorHold & CursorHoldI
+set updatetime=300
+
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
+
+" always show signcolumns
+" set signcolumn=yes
+
+" Use tab for trigger completion with characters ahead and navigate.
+" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> for trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" Use `[c` and `]c` for navigate diagnostics
+nmap <silent> [c <Plug>(coc-diagnostic-prev)
+nmap <silent> ]c <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K for show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if &filetype == 'vim'
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+vmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s).
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Remap for do codeAction of selected region, ex: `<leader>aap` for current paragraph
+vmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap for do codeAction of current line
+nmap <leader>ac  <Plug>(coc-codeaction)
+" Fix autofix problem of current line
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Use `:Format` for format current buffer
+command! -nargs=0 Format :call CocAction('format')
+
+" Use `:Fold` for fold current buffer
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" Add diagnostic info for Airline
+let g:airline_section_error = '%{airline#util#wrap(airline#extensions#coc#get_error(),0)}'
+let g:airline_section_warning = '%{airline#util#wrap(airline#extensions#coc#get_warning(),0)}'
+
+" Using CocList
+" Show all diagnostics
+nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions
+nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+" Show commands
+nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document
+" nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols
+nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list
+nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+" end COC dump
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
 Plug 'leafgarland/typescript-vim'
-" Plug 'HerringtonDarkholme/yats.vim'
-" Plug 'mhartington/nvim-typescript', { 'branch': 'fix-121' }
 
 " PureScript
 Plug 'purescript-contrib/purescript-vim'
 Plug 'frigoeu/psc-ide-vim'
-
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
 
 Plug 'ryanoasis/vim-devicons' " Should be called after other plugins
 
@@ -127,10 +244,11 @@ call plug#end()
 " Change color theme
 set termguicolors
 let g:gruvbox_italic=1
+" let g:gruvbox_sign_column = 'bg0'
 colorscheme gruvbox
 set background=light
 
-let g:indentLine_char = '┆'
+" let g:indentLine_char = '┆'
 
 " Comfortable motion
 " This config will scroll proportionally to the window height and was taken
@@ -160,42 +278,23 @@ endfunction
 
 let g:UltiSnipsSnippetsDir="~/.config/nvim/UltiSnips"
 let g:UltiSnipsSnippetDirectories=['UltiSnips']
-" let g:UltiSnipsSnippetDirectories=$HOME.'/.config/nvim/UltiSnips'
 
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<M-n>"
 let g:UltiSnipsJumpBackwardTrigger="<M-p>"
-
-" Deoplete settings
-set completeopt-=preview
-let g:deoplete#enable_at_startup = 1
-call deoplete#custom#source('typescript', 'min_pattern_length', 1)
-let g:deoplete#auto_complete_delay = 0
-let g:echodoc_enable_at_startup=1
 
 " Ale configuration
 " Register the following fixers for the specified files
 let g:ale_fixers = {
 \   'typescript': ['prettier'],
 \   'javascript': ['prettier'],
+\   'css': ['prettier'],
+\   'html': ['prettier'],
 \   'python': ['yapf'],
 \}
-" \   'javascript': ['prettier'],
 
 " Ale applies fixes on save
 let g:ale_fix_on_save = 1
-
-let g:LanguageClient_serverCommands = {
-    \ 'typescript': ['javascript-typescript-stdio'],
-    \ 'javascript': ['javascript-typescript-stdio'],
-    \ 'javascript.jsx': ['javascript-typescript-stdio'],
-    \ }
-
-nnoremap <silent> K :call LanguageClient_textDocument_hover()<CR>
-nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
-nnoremap <silent> <leader>r :call LanguageClient_textDocument_rename()<CR>
-nnoremap <leader>l :call LanguageClient_textDocument_documentSymbol()<CR>
-nnoremap <leader>L :call LanguageClient_workspace_symbol()<CR>
 
 " EasyMotion
 let g:EasyMotion_smartcase = 1 " Turn on case insensitive feature
@@ -206,41 +305,6 @@ let g:vim_markdown_folding_disabled = 1 " vim-markdown has weird folding default
 let g:vim_markdown_conceal = 0
 let g:vim_markdown_math = 1
 
-" " TypeScript
-" let g:nvim_typescript#type_info_on_hold = 1
-" let g:nvim_typescript#default_mappings = 1
-" let g:nvim_typescript#max_completion_detail=100
-" let g:nvim_typescript#completion_mark=''
-" let g:nvim_typescript#kind_symbols = {
-"       \ 'keyword': 'keyword',
-"       \ 'class': '',
-"       \ 'interface': '',
-"       \ 'script': 'script',
-"       \ 'module': '',
-"       \ 'local class': 'local class',
-"       \ 'type': '',
-"       \ 'enum': '',
-"       \ 'enum member': '',
-"       \ 'alias': '',
-"       \ 'type parameter': 'type param',
-"       \ 'primitive type': 'primitive type',
-"       \ 'var': '',
-"       \ 'local var': '',
-"       \ 'property': '',
-"       \ 'let': '',
-"       \ 'const': '',
-"       \ 'label': 'label',
-"       \ 'parameter': 'param',
-"       \ 'index': 'index',
-"       \ 'function': 'λ',
-"       \ 'local function': 'local function',
-"       \ 'method': '',
-"       \ 'getter': '',
-"       \ 'setter': '',
-"       \ 'call': 'call',
-"       \ 'constructor': '',
-" \}
-
 " Mappings
 
 " Emacs-style command list
@@ -249,10 +313,10 @@ nnoremap <M-x> :Commands<CR>
 " fzf
 nnoremap <leader>p :GFiles<CR>
 nnoremap <leader>P :Files<CR>
-nnoremap <leader>m :Buffers<CR>
-nnoremap <leader>b :History<CR>
+" Recent files and open buffers
+nnoremap <leader>m :History<CR>
+nnoremap <leader>b :Buffers<CR>
 nnoremap <leader>q :q<CR>
-nnoremap <leader>i :TSType<CR>
 nnoremap <leader><Enter> :terminal<CR>
 
 nnoremap <leader>w :w<CR>

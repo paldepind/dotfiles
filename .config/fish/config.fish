@@ -17,6 +17,8 @@ set -x PASSWORD_STORE_DIR /home/simon/Dropbox/password-store
 set -x BAT_THEME OneHalfLight
 set -x PASSWORD_STORE_DIR /home/simon/Dropbox/password-store
 
+bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh
+
 # function fish_prompt
   # powerline-shell --shell bare $status
 # end
