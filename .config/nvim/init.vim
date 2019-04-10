@@ -6,14 +6,14 @@ set shiftwidth=2
 set tabstop=2
 set fillchars=vert:\│ " makes vertical lines a pretty unbroken line
 set noshowmode
-set wildmode=list:longest,full
+" set wildmode=list:longest,full
 set nojoinspaces " Prefer a single space after `.`, `?`, etc.
 
 set spell spelllang=en_us " Turn on spell checking
 
-set ignorecase " /, ? and friends are case insensitive
+set ignorecase " /, ?, etc. are case insensitive
 set smartcase " the above setting is toggled of if the search word contains upper-case caracters
-set inccommand="nosplit"
+set inccommand="split"
 
 set hidden " Hidden buffers are preserved
 
@@ -25,8 +25,8 @@ map Y y$ " Make Y yank to end of line
 
 set guifont=Fira_Code:h10
 
-
-tnoremap <Esc> <C-\><C-n>
+autocmd TermOpen * tnoremap <Esc> <c-\><c-n>
+" autocmd FileType fzf tunmap <Esc>
 
 " Install Vim Plug if not installed
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
@@ -51,6 +51,7 @@ Plug 'machakann/vim-highlightedyank'
 Plug '/usr/share/vim/vimfiles' " fzf's vim files are installed here by Arch Linux
 Plug '/usr/local/opt/fzf' " fzf's vim files are installed here by Brew on OSX
 Plug 'junegunn/fzf.vim'
+" Plug 'Shougo/denite.nvim'
 
 " Git related things
 Plug 'tpope/vim-fugitive'
@@ -63,7 +64,6 @@ Plug 'farmergreg/vim-lastplace' " Reopen files to last position
 Plug 'scrooloose/nerdtree'
 " Plug 'henrik/vim-indexed-search' " Shows number of matches with /
 Plug 'easymotion/vim-easymotion'
-" Plug 'ludovicchabant/vim-gutentags' " Automatically manages tags
 Plug 'airblade/vim-rooter' " Change the working directory to project root
 Plug 'yuttie/comfortable-motion.vim' " Make scrolling bindings animate
 Plug 'majutsushi/tagbar'
@@ -81,6 +81,7 @@ Plug 'jiangmiao/auto-pairs' " automatically inserts matching quotes, parenthesis
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'SirVer/ultisnips'
 Plug 'wellle/targets.vim'
+Plug 'andymass/vim-matchup' " even better %
 
 " For prose
 let g:goyo_height = '100%'
@@ -88,36 +89,17 @@ Plug 'junegunn/goyo.vim'
 Plug 'reedes/vim-pencil'
 
 " General language plugins
-Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') } " Autocompletion
-Plug 'shougo/echodoc.vim' " Display function signature in echo area
-Plug 'w0rp/ale' " General purpose linting
+" Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') } " Autocompletion
+" Plug 'shougo/echodoc.vim' " Display function signature in echo area
+" Plug 'w0rp/ale' " General purpose linting
 Plug 'janko-m/vim-test' " Runs test
 Plug 'tpope/vim-commentary' " More comments
 
-" Markdown
-Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown'
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
-
-" HTML/CSS
-Plug 'mustache/vim-mustache-handlebars'
-Plug 'digitaltoad/vim-pug'
-
-" Javascript
-Plug 'pangloss/vim-javascript'
-let g:javascript_plugin_jsdoc = 1
-
-Plug 'Quramy/vim-js-pretty-template'
-
-" Typescript
 Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 
 " Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
 " Coc only does snippet and additional edit on confirm.
 " begin COC dump
-
-" if hidden not set, TextEdit might fail.
-set hidden
 
 " Better display for messages
 " set cmdheight=2
@@ -151,9 +133,12 @@ inoremap <silent><expr> <c-space> coc#refresh()
 " Coc only does snippet and additional edit on confirm.
 inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 
-" Use `[c` and `]c` for navigate diagnostics
-nmap <silent> [c <Plug>(coc-diagnostic-prev)
-nmap <silent> ]c <Plug>(coc-diagnostic-next)
+" Show signature help on placeholder jump
+autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+
+" Use `[e` and `]e` for navigate diagnostics
+nmap <silent> [e <Plug>(coc-diagnostic-prev)
+nmap <silent> ]e <Plug>(coc-diagnostic-next)
 
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
@@ -219,7 +204,7 @@ nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
 " Find symbol of current document
 " nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
 " Search workspace symbols
-nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+nnoremap <silent> <space>l  :<C-u>CocList -I symbols<cr>
 " Do default action for next item.
 nnoremap <silent> <space>j  :<C-u>CocNext<CR>
 " Do default action for previous item.
@@ -231,13 +216,33 @@ inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
 " Highlight symbol under cursor on CursorHold
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
-Plug 'leafgarland/typescript-vim'
+" Markdown
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
+
+" HTML/CSS
+Plug 'mustache/vim-mustache-handlebars'
+Plug 'digitaltoad/vim-pug'
+
+" Javascript
+Plug 'pangloss/vim-javascript'
+let g:javascript_plugin_jsdoc = 1
+
+Plug 'Quramy/vim-js-pretty-template'
+
+" Typescript
+" Plug 'leafgarland/typescript-vim'
+Plug 'HerringtonDarkholme/yats.vim'
 
 " PureScript
 Plug 'purescript-contrib/purescript-vim'
 Plug 'frigoeu/psc-ide-vim'
 
 Plug 'ryanoasis/vim-devicons' " Should be called after other plugins
+
+" Go
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 
 call plug#end()
 
@@ -247,8 +252,6 @@ let g:gruvbox_italic=1
 " let g:gruvbox_sign_column = 'bg0'
 colorscheme gruvbox
 set background=light
-
-" let g:indentLine_char = '┆'
 
 " Comfortable motion
 " This config will scroll proportionally to the window height and was taken
@@ -285,18 +288,19 @@ let g:UltiSnipsJumpBackwardTrigger="<M-p>"
 
 " Ale configuration
 " Register the following fixers for the specified files
-let g:ale_fixers = {
-\   'typescript': ['prettier'],
-\   'javascript': ['prettier'],
-\   'css': ['prettier'],
-\   'html': ['prettier'],
-\   'python': ['yapf'],
-\}
+" let g:ale_fixers = {
+" \   'typescript': ['prettier'],
+" \   'javascript': ['prettier'],
+" \   'css': ['prettier'],
+" \   'html': ['prettier'],
+" \   'python': ['yapf'],
+" \}
 
-" Ale applies fixes on save
-let g:ale_fix_on_save = 1
+" " Ale applies fixes on save
+" let g:ale_fix_on_save = 1
 
 " EasyMotion
+
 let g:EasyMotion_smartcase = 1 " Turn on case insensitive feature
 
 " Markdown
