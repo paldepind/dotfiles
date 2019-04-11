@@ -75,11 +75,12 @@ map <A-o> <Plug>(choosewin)
 let g:choosewin_label = 'ARSTNEIOVMDHC,PLFUWY'
 
 " # Editing
-" Plugins that aid in the insertion and changing of characters
+" Plugins for general editing that aids in changing text
+
 Plug 'machakann/vim-sandwich'
 Plug 'jiangmiao/auto-pairs' " automatically inserts matching quotes, parenthesis, etc.
 Plug 'ntpeters/vim-better-whitespace'
-Plug 'SirVer/ultisnips'
+Plug 'matze/vim-move' " Adds <A-j> and <A-k> to move lines up and down
 Plug 'wellle/targets.vim'
 Plug 'andymass/vim-matchup' " even better %
 
@@ -218,7 +219,13 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 
 " Markdown
 Plug 'godlygeek/tabular'
-Plug 'plasticboy/vim-markdown'
+" Plug 'plasticboy/vim-markdown'
+Plug 'sidofc/mkdx'
+let g:mkdx#settings = { 'highlight': { 'enable': 1 },
+                    \ 'enter': { 'shift': 1 },
+                    \ 'links': { 'external': { 'enable': 1 } },
+                    \ 'toc': { 'text': 'Table of Contents', 'update_on_write': 1 },
+                    \ 'fold': { 'enable': 1 } }
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
 
 " HTML/CSS
@@ -302,6 +309,8 @@ let g:UltiSnipsJumpBackwardTrigger="<M-p>"
 " EasyMotion
 
 let g:EasyMotion_smartcase = 1 " Turn on case insensitive feature
+let g:EasyMotion_keys = 'arsdheiqwfpgjluy;zxcvbkmtno'
+let g:EasyMotion_startofline = 0 " keep cursor colum JK motion
 
 " Markdown
 let g:vim_markdown_new_list_item_indent = 2 " indent with 2 spaces
