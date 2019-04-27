@@ -15,3 +15,21 @@ describe("${1:description}", () => {
 	${VISUAL}$0
 });
 endsnippet
+
+snippet fn "function(...) { ... };"
+function ${1:name}(${2:args}) {
+  ${VISUAL}$0
+}
+endsnippet
+
+snippet im "import ... from ..;"
+import { $0 } from "${1:from}";
+endsnippet
+
+snippet lg "console.log(...);"
+console.log($0);
+endsnippet
+
+snippet co "const ... = ...;"
+const $1 = $0;
+endsnippet

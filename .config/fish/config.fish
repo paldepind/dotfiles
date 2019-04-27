@@ -1,4 +1,5 @@
 set PATH /home/simon/.local/bin /home/simon/.npm-packages/bin /home/simon/.cabal/bin /home/simon/.gem/ruby/2.5.0/bin $PATH
+set PATH $HOME/go/bin $PATH
 
 alias b='upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -E "state|time\ to\ full|percentage"'
 alias t='date'

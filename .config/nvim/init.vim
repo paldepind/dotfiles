@@ -84,10 +84,15 @@ Plug 'matze/vim-move' " Adds <A-j> and <A-k> to move lines up and down
 Plug 'wellle/targets.vim'
 Plug 'andymass/vim-matchup' " even better %
 
+Plug 'SirVer/ultisnips'
+
 " For prose
 let g:goyo_height = '100%'
 Plug 'junegunn/goyo.vim'
 Plug 'reedes/vim-pencil'
+
+" Plug 'vimwiki/vimwiki'
+" let g:vimwiki_list = [{'path': '~/Sync/vimwiki/'}]
 
 " General language plugins
 " Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') } " Autocompletion
@@ -95,6 +100,7 @@ Plug 'reedes/vim-pencil'
 " Plug 'w0rp/ale' " General purpose linting
 Plug 'janko-m/vim-test' " Runs test
 Plug 'tpope/vim-commentary' " More comments
+Plug 'meain/vim-package-info', { 'do': 'npm install' }
 
 Plug 'neoclide/coc.nvim', {'tag': '*', 'do': { -> coc#util#install()}}
 
@@ -224,8 +230,7 @@ Plug 'sidofc/mkdx'
 let g:mkdx#settings = { 'highlight': { 'enable': 1 },
                     \ 'enter': { 'shift': 1 },
                     \ 'links': { 'external': { 'enable': 1 } },
-                    \ 'toc': { 'text': 'Table of Contents', 'update_on_write': 1 },
-                    \ 'fold': { 'enable': 1 } }
+                    \ 'fold': { 'enable': 0 } }
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
 
 " HTML/CSS
