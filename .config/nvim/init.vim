@@ -58,6 +58,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-rhubarb'
 Plug 'jreybert/vimagit'
+Plug 'rhysd/git-messenger.vim'
 
 " Navigation
 Plug 'farmergreg/vim-lastplace' " Reopen files to last position
@@ -236,6 +237,7 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
 " HTML/CSS
 Plug 'mustache/vim-mustache-handlebars'
 Plug 'digitaltoad/vim-pug'
+Plug 'rrethy/vim-hexokinase'
 
 " Javascript
 Plug 'pangloss/vim-javascript'
