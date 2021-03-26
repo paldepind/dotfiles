@@ -21,54 +21,83 @@
 ;; use-package install's packages automatically
 (setq use-package-always-ensure t)
 
-;; Changes to defaults
+(defun edit-init ()
+  "Open the init file."
+  (interactive)
+  (find-file user-init-file))
+
 ;; Nicer scrolling
-(setq mouse-wheel-scroll-amount '(2 ((shift) . 2) ((control) . nil))) 
+(setq mouse-wheel-scroll-amount '(2 ((shift) . 2) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
 
-(use-package gruvbox-theme
+;; * Packages for aesthetics
+
+(use-package doom-themes
   :config
-  (load-theme 'gruvbox-light-medium t))
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  ;; (load-theme 'doom-one-light t)
+  (load-theme 'doom-solarized-light t)
+  ;; (setq doom-themes-treemacs-theme "doom-atom")
+  ;; (setq doom-themes-treemacs-theme "doom-colors")
+  ;; (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/white-paper-theme")
 ;; (load-theme 'white-paper t)
 
-(set-frame-font "Fira Code")
+;; A selection of fonts
+;; (set-frame-font "IBM Plex Mono")
+;; (set-frame-font "Fira Code")
+(set-frame-font "Source Code Pro")
 
-(set-fontset-font "fontset-default" nil 
-                  (font-spec :size 20 :name "Noto Sans Symbols"))
+;; (set-fontset-font "fontset-default" nil
+;;                   (font-spec :size 20 :name "Noto Sans Symbols"))
+
+(use-package highlight-indent-guides
+  :custom
+  (highlight-indent-guides-method 'character)
+  :init
+  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 
 (use-package ripgrep)
 
-(use-package diminish)
+;; (use-package diminish)
 
-(use-package ivy)
+(use-package ivy
+  :config
+  (ivy-mode))
 
 (use-package counsel
-  :bind ("M-x" . counsel-M-x)
-  :commands (counsel-M-x))
+  :config
+  (counsel-mode))
 
 (use-package all-the-icons)
 
 (use-package all-the-icons-ivy
-  :ensure t
   :config
   (all-the-icons-ivy-setup))
 
-;; (use-package doom-modeline
-;;   :ensure t
-;;   :defer t
-;;   :hook (after-init . doom-modeline-init))
+(use-package doom-modeline
+  :defer t
+  :hook (after-init . doom-modeline-mode))
 
 (use-package which-key)
 
 (use-package evil
   :init
+  (setq evil-want-Y-yank-to-eol t)
+  (setq evil-shift-width 2)
+  (setq evil-want-keybinding nil) ; Set to nil per evil-collections documentation
+  (setq evil-want-C-u-scroll t)
+  (setq evil-disable-insert-state-bindings t) ; This makes it possible to use Emacs bindings in insert mode
   (setq evil-want-abbrev-expand-on-insert-exit nil)
-  (setq evil-want-integration t)
-  (setq evil-want-keybinding nil)
   :config
   (evil-mode 1))
+
+;; * Evil
 
 (use-package evil-collection
   :after evil
@@ -79,22 +108,26 @@
   :config
   (evil-commentary-mode))
 
-;; (use-package telephone-line
-;;   :config
-;;   (telephone-line-mode 1))
+(use-package evil-surround
+  :config
+  (global-evil-surround-mode 1))
 
-(use-package doom-modeline
-      :ensure t
-      :defer t
-      :hook (after-init . doom-modeline-mode))
+(use-package evil-numbers
+  :commands (evil-numbers/inc-at-pt evil-numbers/dec-at-pt)
+  :init
+  (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
+  (define-key evil-visual-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
+  ;; Note that overriding `C-x' in Emacs is probably too crazy.
+  (define-key evil-normal-state-map (kbd "M-a") 'evil-numbers/dec-at-pt)
+  (define-key evil-visual-state-map (kbd "M-a") 'evil-numbers/dec-at-pt))
 
-(use-package neotree
-  :custom
-  (neo-theme (if (display-graphic-p) 'icons 'arrow)))
-
-(use-package rainbow-delimiters
-  :hook
-  (prog-mode . rainbow-delimiters-mode))
+(use-package treemacs
+  :defer t
+  :config
+  ;; (treemacs-load-theme "all-the-icons")
+  (treemacs-git-mode 'extended)
+  (with-eval-after-load 'treemacs
+    (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)))
 
 (setq-default fill-column 80)
 
@@ -105,44 +138,35 @@
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
 
-(use-package general :ensure t
+(use-package general
   :config
   (general-evil-setup t)
   (nmap
     :prefix "SPC"
-    "m" 'helm-mini
-    "l" 'helm-imenu
-    "w" 'save-buffer))
+    "f" 'projectile-find-file
+    "p" 'projectile-switch-project
+    "g" 'magit-status
+    "b" 'ivy-switch-buffer
+    "m" 'counsel-switch-buffer
+    "w" 'save-buffer
+    "," 'edit-init))
 
-(use-package prettier-js
-  :hook (typescript-mode . prettier-js-mode))
+;; Automatically adding matching braces
 
-(use-package helm
-  :config
-  (helm-mode 1)
-  (define-key helm-map (kbd "TAB") #'helm-execute-persistent-action)
-  (define-key helm-map (kbd "<tab>") #'helm-execute-persistent-action)
-  (define-key helm-map (kbd "C-z") #'helm-select-action)
-  :bind (("C-x C-f" . helm-find-files)
-	 ;; ("M-x" . helm-M-x)
-         ("C-x C-b" . helm-mini)))
+;; (electric-pair-mode)
+(defun my/newline-indent (&rest _ignored)
+  "Insert an extra newline after point, and reindent."
+  (newline)
+  (indent-according-to-mode)
+  (forward-line -1)
+  (indent-according-to-mode))
 
-(use-package helm-themes
-  :commands (helm-themes))
-
-; (electric-pair-mode)
 (use-package smartparens
   :config
   (require 'smartparens-config)
   (smartparens-global-mode t)
-  (show-smartparens-global-mode t))
-
-;; Awesome Nyan cat
-;; (use-package nyan-mode
-;;   :custom
-;;   (nyan-wavy-trail t)
-;;   :config
-;;   (nyan-mode))
+  (show-smartparens-global-mode t)
+  (sp-local-pair 'latex-mode "\\[" nil :post-handlers '((my/newline-indent "RET"))))
 
 (use-package dashboard
   :config
@@ -153,43 +177,29 @@
 
 (use-package projectile
   :diminish
+  :init
+  (setq projectile-project-search-path '("~/projects/"))
   :config
   (projectile-mode +1)
-  ;; (use-package helm-projectile
-  ;;   :config
-  ;;   (setq projectile-completion-system 'helm
-  ;;         projectile-switch-project-action 'helm-projectile)
-  ;;   (helm-projectile-on))
   :bind-keymap
   ("C-c p" . projectile-command-map))
 
-(use-package helm-projectile
-  :config
-  (setq projectile-completion-system 'helm
-	projectile-switch-project-action 'helm-projectile))
-
 (use-package company
   :defer 2
-  :diminish
   :custom
-  (company-begin-commands '(self-insert-command))
-  (company-idle-delay .1)
-  (company-minimum-prefix-length 1)
-  (company-show-numbers t)
-  (company-tooltip-align-annotations 't)
+;   (company-begin-commands '(self-insert-command))
+;   (company-idle-delay .1)
+;   (company-minimum-prefix-length 1)
+;   (company-show-numbers t)
+;   (company-tooltip-align-annotations 't)
   (global-company-mode t))
 
-(use-package company-flx
-  :after company
-  :config
-  (company-flx-mode +1))
-
-(use-package flycheck
-  :config
-  (global-flycheck-mode))
+; (use-package flycheck
+;   :config
+;   (global-flycheck-mode))
 
 (use-package magit
-  :bind ("<f8>" . magit-status))
+  :commands magit-status)
 
 (use-package git-gutter
   :diminish
@@ -203,22 +213,33 @@
   (ispell-program-name "aspell")
   :hook (LaTeX-mode . flyspell-mode))
 
+;; Latex
+
 (use-package tex
   :ensure auctex
   :hook ((LaTeX-mode . reftex-mode)
-	 (LaTeX-mode . prettify-symbols-mode)
-	 (LaTeX-mode . (lambda () (define-key LaTeX-mode-map (kbd "$") 'self-insert-command))))
+	 (LaTeX-mode . prettify-symbols-mode))
+  ;; 	 (LaTeX-mode . (lambda () (define-key LaTeX-mode-map (kbd "$") 'self-insert-command))))
+  :init
   :custom
-  (TeX-PDF-mode t) ; PDF mode instead of DVI
-  (TeX-auto-save t)
-  (TeX-byte-compile t)
-  (TeX-clean-confirm nil)
-  (TeX-master 'dwim)
-  (TeX-parse-self t)
-  (TeX-electric-math t)
-  (TeX-electric-sub-and-superscript t)
+  (prettify-symbols-unprettify-at-point t)
+  (TeX-save-query nil) ; Save without asking
   (TeX-source-correlate-mode t)
-  (prettify-symbols-unprettify-at-point t))
+  (TeX-source-correlate-start-server t)
+  (TeX-view-program-selection '((output-pdf "Skim")))
+  (TeX-view-program-list
+   '(("Skim" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b")))
+  ;; (TeX-PDF-mode t) ; PDF mode instead of DVI
+  ;; (TeX-auto-save t)
+  ;; (TeX-parse-self t)
+  ;; (TeX-byte-compile t)
+  ;; (TeX-clean-confirm nil)
+  ;; (TeX-master 'dwim)
+  ;; Insertion of pairs is currently handled by Smartparens
+  ;; (LaTeX-electric-left-right-brace t)
+  ;; (TeX-electric-math (cons "\\(" "\\)"))
+  ;; (TeX-electric-sub-and-superscript t)
+  )
 
 (use-package bibtex
   :after auctex
@@ -234,6 +255,8 @@
 
 (use-package company-math :after (auctex company))
 
+;; Markdown
+
 (use-package markdown-mode
   :mode ("\\.md\\'" . markdown-mode)
   :config
@@ -241,75 +264,25 @@
   (add-hook 'markdown-mode-hook 'flyspell-mode)
   (add-hook 'markdown-mode-hook 'auto-fill-mode))
 
-;; Scala
+; (use-package yasnippet
+;   :diminish yas-minor-mode
+;   :config
+;   (yas-global-mode 1))
 
-(use-package ensime)
-(use-package sbt-mode)
-(use-package scala-mode)
+; (use-package multiple-cursors)
 
-(use-package json-mode
-  :mode "\\.json\\'"
-  :custom
-  (js-indent-level 2))
+;; *  Coq
 
-;; TypeScript
-
-(use-package typescript-mode
-  :mode "\\.ts\\'"
-  :custom
-  (typescript-indent-level 2))
-
-(use-package tide
-  :after (typescript-mode company flycheck)
-  :hook ((typescript-mode . tide-setup)
-         (typescript-mode . tide-hl-identifier-mode)))
-
-(use-package web-mode
-  :mode "\\.tsx\\'"
-  :config
-  (setq web-mode-markup-indent-offset 2)
-  (setq web-mode-code-indent-offset 2)
-  (add-hook 'web-mode-hook
-            (lambda ()
-              (when (string-equal "tsx" (file-name-extension buffer-file-name))
-                (tide-setup)
-                (flycheck-mode +1)
-                (setq flycheck-check-syntax-automatically '(save mode-enabled))
-                (eldoc-mode +1)
-		(company-mode-on)))))
-
-(use-package purescript-mode
-  :mode "\\.purs\\'"
-  :config
-  (add-hook 'purescript-mode-hook
-	    (lambda ()
-	      (turn-on-purescript-indentation))))
-
-(use-package psc-ide
-  :hook (purescript-mode . psc-ide-mode))
-
-(use-package indium)
-
-(use-package yasnippet
-  :diminish yas-minor-mode
-  :config
-  (yas-global-mode 1))
-
-(use-package multiple-cursors)
-
-;; (use-package keyano
-;;   :ensure nil
-;;   :load-path "~/projects/keyano/")
-
-;; ** Coq
 (use-package proof-general
   :mode ("\\.v\\'" . coq-mode)
-  :init (custom-set-variables '(coq-prog-name "~/.opam/default/bin/coqtop") ))
+  :init (custom-set-variables '(coq-prog-name "~/.opam/default/bin/coqtop")))
 
 (use-package company-coq
   :config
   (add-hook 'coq-mode-hook #'company-coq-mode))
 
+
+;; Useful function for reaniming the current buffer and file.
 ;; From https://stackoverflow.com/questions/384284/how-do-i-rename-an-open-file-in-emacs
 (defun rename-file-and-buffer (new-name)
   "Renames both current buffer and file it's visiting to NEW-NAME."
@@ -326,66 +299,15 @@
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
 
+;; Garbage inserted by Emacs
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(TeX-PDF-mode t t)
- '(TeX-auto-save t t)
- '(TeX-byte-compile t t)
- '(TeX-clean-confirm nil t)
- '(TeX-electric-math t t)
- '(TeX-electric-sub-and-superscript t t)
- '(TeX-master (quote dwim) t)
- '(TeX-parse-self t t)
- '(TeX-source-correlate-mode t t)
- '(ansi-color-faces-vector
-   [default default default italic underline success warning error])
- '(company-begin-commands (quote (self-insert-command)))
- '(company-idle-delay 0.1)
- '(company-minimum-prefix-length 2)
- '(company-show-numbers t)
- '(company-tooltip-align-annotations t)
  '(coq-prog-name "~/.opam/default/bin/coqtop")
- '(custom-safe-themes
-   (quote
-    ("0630e7487d7eec3b83711a70c0055fb63f8630e67476c3ab8b22d83efd9b24fa" "8298b72adbc1f87eb9700f863c675361ea38c1cceccaf0072d2e2b137721da15" "5e7fa06a700480ea1e5d86bec316cc07a009cfeb506e6e051fd014c500c5029b" default)))
- '(fci-rule-color "#171717")
- '(global-company-mode t)
- '(global-font-lock-mode t)
- '(ispell-program-name "aspell")
- '(js-indent-level 2)
- '(neo-theme (quote icons))
- '(nyan-wavy-trail t)
  '(package-selected-packages
-   (quote
-    (color-theme-sanityinc-solarized avy diminish doom-themes all-the-icons telephone-line helm-rg json-mode smartparens nyan-mode rainbow-delimiters material-theme tao-theme basic-theme spacemacs-theme minimal-theme white-theme tide typescript-mode which-key use-package solarized-theme moody magit helm-themes helm-projectile gruvbox-theme general evil-collection ensime dashboard company-math company-box company-auctex cdlatex)))
- '(pdf-view-midnight-colors (quote ("#655370" . "#fbf8ef")))
- '(prettify-symbols-unprettify-at-point t)
- '(typescript-indent-level 2 t)
- '(vc-annotate-background "#0E0E0E")
- '(vc-annotate-color-map
-   (quote
-    ((20 . "#616161")
-     (40 . "#9E9E9E")
-     (60 . "#9E9E9E")
-     (80 . "#C3C3C3")
-     (100 . "#C3C3C3")
-     (120 . "#DADADA")
-     (140 . "#DADADA")
-     (160 . "#E8E8E8")
-     (180 . "#E8E8E8")
-     (200 . "#E8E8E8")
-     (220 . "#F1F1F1")
-     (240 . "#F1F1F1")
-     (260 . "#F1F1F1")
-     (280 . "#F6F6F6")
-     (300 . "#F6F6F6")
-     (320 . "#F6F6F6")
-     (340 . "#FAFAFA")
-     (360 . "#FAFAFA"))))
- '(vc-annotate-very-old-color "#DADADA"))
+   '(evil-numbers evil-surround which-key use-package treemacs-all-the-icons smartparens ripgrep rainbow-delimiters proof-general projectile neotree markdown-mode magit highlight-indent-guides gruvbox-theme git-gutter general exec-path-from-shell evil-commentary evil-collection doom-themes doom-modeline diminish dashboard counsel company-coq company-auctex all-the-icons-ivy)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
