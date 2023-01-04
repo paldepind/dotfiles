@@ -1,5 +1,5 @@
 (when window-system
-  (menu-bar-mode -1) ; Disable the menu bar
+  (menu-bar-mode 1) ; Disable the menu bar
   (scroll-bar-mode -1) ; Disable the scroll bar
   (tool-bar-mode -1) ; Disable the tool bar
   (tooltip-mode -1)) ; Disable the tooltips
@@ -21,24 +21,37 @@
 ;; use-package install's packages automatically
 (setq use-package-always-ensure t)
 
-(defun edit-init ()
-  "Open the init file."
-  (interactive)
-  (find-file user-init-file))
-
 ;; Nicer scrolling
-(setq mouse-wheel-scroll-amount '(2 ((shift) . 2) ((control) . nil)))
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
+(setq scroll-step 1)
+;; (pixel-scroll-precision-mode)
+
+;; Disable beeping
+(setq ring-bell-function 'ignore)
+
+(setq window-divider-default-right-width 100)
+
+(global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
+(global-set-key (kbd "s-,") 'edit-init)
+(setq frame-resize-pixelwise t)
 
 ;; * Packages for aesthetics
+
+(defun my/apply-theme (appearance)
+  "Load theme, taking current system APPEARANCE into consideration."
+  (mapc #'disable-theme custom-enabled-themes)
+  (pcase appearance
+    ('light (load-theme 'doom-one-light t))
+    ('dark (load-theme 'doom-one t))))
 
 (use-package doom-themes
   :config
   ;; Global settings (defaults)
   (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  ;; (load-theme 'doom-one-light t)
-  (load-theme 'doom-solarized-light t)
+  (add-hook 'ns-system-appearance-change-functions #'my/apply-theme)
+  ()
   ;; (setq doom-themes-treemacs-theme "doom-atom")
   ;; (setq doom-themes-treemacs-theme "doom-colors")
   ;; (doom-themes-treemacs-config)
@@ -49,12 +62,25 @@
 ;; (load-theme 'white-paper t)
 
 ;; A selection of fonts
-;; (set-frame-font "IBM Plex Mono")
-;; (set-frame-font "Fira Code")
-(set-frame-font "Source Code Pro")
+(set-face-attribute 'default nil
+                    ;; :family "Source Code Pro"
+                    ;; :family "IBM Plex Mono"
+                    ;; :family "Fira Code"
+                    :family "JetBrains Mono"
+                    ;; :family "Menlo"
+                    ;; :family "Monaco"
+                    ;; :family "Roboto Mono"
+                    :height 120
+                    :weight 'normal
+                    :width 'normal)
 
 ;; (set-fontset-font "fontset-default" nil
 ;;                   (font-spec :size 20 :name "Noto Sans Symbols"))
+
+(use-package doom-modeline
+  :hook (after-init . doom-modeline-mode))
+
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 
 (use-package highlight-indent-guides
   :custom
@@ -62,13 +88,49 @@
   :init
   (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 
+(use-package idle-highlight-mode
+  :config (setq idle-highlight-idle-time 0.2)
+  :hook ((prog-mode text-mode) . idle-highlight-mode))
+
+(use-package default-text-scale)
+
 (use-package ripgrep)
 
 ;; (use-package diminish)
 
+(use-package avy
+  :custom
+  (avy-keys '(?a ?r ?s ?t ?n ?e ?i ?o)))
+
+(use-package ace-window
+  :commands ace-window
+  :custom
+  (aw-keys '(?a ?r ?s ?t ?n ?e ?i ?o)))
+
+(use-package smex)
+
 (use-package ivy
+  :custom
+  ;; add ‘recentf-mode’ and bookmarks to ‘ivy-switch-buffer’.
+  (ivy-use-virtual-buffers t)
+  ;; number of result lines to display
+  (ivy-height 25)
   :config
   (ivy-mode))
+
+;; (use-package ivy-posframe
+;;   :init
+;;   (setq ivy-posframe-display-functions-alist
+;; 	'((swiper            . ivy-display-function-fallback)
+;; 	  (t                 . ivy-posframe-display)))
+;; 	  ;; (t                . ivy-display-function-fallback)))
+;;   :custom
+;;   (ivy-posframe-border-width 28)
+;;   :config
+;;   (ivy-posframe-mode 1))
+
+(use-package ivy-avy
+  :after ivy)
 
 (use-package counsel
   :config
@@ -80,20 +142,33 @@
   :config
   (all-the-icons-ivy-setup))
 
-(use-package doom-modeline
-  :defer t
-  :hook (after-init . doom-modeline-mode))
+(use-package vterm
+  :ensure t
+  :commands vterm)
 
-(use-package which-key)
+(use-package vterm-toggle
+  :ensure t
+  :commands vterm-toggle)
+
+(use-package which-key
+  :config
+  (which-key-mode))
+
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode 1))
 
 (use-package evil
   :init
   (setq evil-want-Y-yank-to-eol t)
   (setq evil-shift-width 2)
+  (setq evil-symbol-word-search t)
   (setq evil-want-keybinding nil) ; Set to nil per evil-collections documentation
   (setq evil-want-C-u-scroll t)
   (setq evil-disable-insert-state-bindings t) ; This makes it possible to use Emacs bindings in insert mode
   (setq evil-want-abbrev-expand-on-insert-exit nil)
+  :custom
+  (evil-undo-system 'undo-tree)
   :config
   (evil-mode 1))
 
@@ -102,6 +177,15 @@
 (use-package evil-collection
   :after evil
   :config
+  (evil-collection-define-key 'normal 'coq-mode-map
+    ;; goto
+    "gd" 'company-coq-jump-to-definition)
+  (evil-collection-define-key 'normal 'coq-goals-mode-map
+    ;; goto
+    "gd" 'company-coq-jump-to-definition)
+  (evil-collection-define-key 'normal 'coq-response-mode-map
+    ;; goto
+    "gd" 'company-coq-jump-to-definition)
   (evil-collection-init))
 
 (use-package evil-commentary
@@ -124,10 +208,23 @@
 (use-package treemacs
   :defer t
   :config
-  ;; (treemacs-load-theme "all-the-icons")
+  ;; Single-click instead of double-click
+  (define-key treemacs-mode-map [mouse-1] #'treemacs-single-click-expand-action)
+  ;; Hide gitignored files
   (treemacs-git-mode 'extended)
   (with-eval-after-load 'treemacs
-    (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?)))
+    (add-to-list 'treemacs-pre-file-insert-predicates #'treemacs-is-file-git-ignored?))
+  :bind
+  (:map global-map
+	;; VSCode style binding
+	("s-E" . treemacs-display-current-project-exclusively)))
+
+(use-package treemacs-projectile
+  :after (treemacs projectile))
+
+(use-package treemacs-evil
+  :after (treemacs evil)
+  :ensure t)
 
 (setq-default fill-column 80)
 
@@ -143,15 +240,27 @@
   (general-evil-setup t)
   (nmap
     :prefix "SPC"
-    "f" 'projectile-find-file
-    "p" 'projectile-switch-project
+    "q" 'delete-window
+    "RET" 'vterm-toggle
+    "p" 'projectile-find-file
+    "P" 'projectile-switch-project
     "g" 'magit-status
     "b" 'ivy-switch-buffer
     "m" 'counsel-switch-buffer
     "w" 'save-buffer
-    "," 'edit-init))
+    "," 'edit-init
+    "l" 'swiper
+    "/" 'counsel-rg
+    "k" 'avy-goto-line-above
+    "j" 'avy-goto-line-below
+    "o" 'ace-window))
 
 ;; Automatically adding matching braces
+
+;; * Packages for general editing
+
+(use-package ws-butler
+  :hook (prog-mode . ws-butler-mode))
 
 ;; (electric-pair-mode)
 (defun my/newline-indent (&rest _ignored)
@@ -161,12 +270,21 @@
   (forward-line -1)
   (indent-according-to-mode))
 
-(use-package smartparens
-  :config
-  (require 'smartparens-config)
-  (smartparens-global-mode t)
-  (show-smartparens-global-mode t)
-  (sp-local-pair 'latex-mode "\\[" nil :post-handlers '((my/newline-indent "RET"))))
+;; (use-package smartparens
+;;   :config
+;;   (require 'smartparens-config)
+;;   (smartparens-global-mode t)
+;;   (show-smartparens-global-mode t)
+;;   (sp-local-pair 'latex-mode "\\[" nil :post-handlers '((my/newline-indent "RET")))
+;;   (sp-with-modes '(coq-mode)
+;;     ;; Disable ` because it is used in implicit generalization
+;;     (sp-local-pair "`" nil :actions nil)
+;;     ;; Disable ' because it is used in pattern-matching
+;;     (sp-local-pair "'" nil :actions nil)
+;;     (sp-local-pair "(*" "*)" :actions nil)
+;;     (sp-local-pair "(*" "*"
+;; 		    :actions '(insert)
+;; 		    :post-handlers '(("| " "SPC") ("|\n[i]*)[d-2]" "RET")))))
 
 (use-package dashboard
   :config
@@ -194,12 +312,21 @@
 ;   (company-tooltip-align-annotations 't)
   (global-company-mode t))
 
-; (use-package flycheck
-;   :config
-;   (global-flycheck-mode))
+(use-package flycheck)
+  ;; :config
+  ;; (global-flycheck-mode))
 
 (use-package magit
-  :commands magit-status)
+  ;; :config
+  ;; (transient-append-suffix 'magit-pull "-r"
+  ;;   '("-a" "Autostash" "--autostash"))
+  :commands magit-status
+  :custom
+  ;; Makes Magit windows use the full _height_ of the frame
+  (magit-display-buffer-function 'magit-display-buffer-fullcolumn-most-v1))
+
+;; (use-package forge
+;;   :after magit)
 
 (use-package git-gutter
   :diminish
@@ -213,14 +340,40 @@
   (ispell-program-name "aspell")
   :hook (LaTeX-mode . flyspell-mode))
 
+;; lsp-mode
+
+(use-package lsp-mode
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+  (setq lsp-keymap-prefix "C-c l")
+  ;; :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+  ;;        (XXX-mode . lsp)
+  ;;        ;; if you want which-key integration
+  ;;        (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
+
+;; optionally
+(use-package lsp-ui :commands lsp-ui-mode)
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+;; (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+;; (use-package dap-mode)
+;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+
 ;; Latex
 
 (use-package tex
   :ensure auctex
-  :hook ((LaTeX-mode . reftex-mode)
-	 (LaTeX-mode . prettify-symbols-mode))
-  ;; 	 (LaTeX-mode . (lambda () (define-key LaTeX-mode-map (kbd "$") 'self-insert-command))))
-  :init
+  :config
+  ;; (define-key LaTeX-mode-map (kbd "M-q") ')
+  ;; :bind
+  ;; ([remap fill-paragraph] . fill-paragraph-one-sentence-per-line)
+  :hook
+  ((LaTeX-mode . reftex-mode)
+   (LaTeX-mode . prettify-symbols-mode)
+   (LaTeX-mode . (lambda ()
+		   (LaTeX-add-environments
+		    '("mathpar" LaTeX-env-label)))))
   :custom
   (prettify-symbols-unprettify-at-point t)
   (TeX-save-query nil) ; Save without asking
@@ -249,6 +402,8 @@
     "Ensures that each entry does not exceed 120 characters."
     (setq fill-column 120)))
 
+(use-package biblio)
+
 (use-package company-auctex
   :after (auctex company)
   :config (company-auctex-init))
@@ -264,25 +419,126 @@
   (add-hook 'markdown-mode-hook 'flyspell-mode)
   (add-hook 'markdown-mode-hook 'auto-fill-mode))
 
-; (use-package yasnippet
-;   :diminish yas-minor-mode
-;   :config
-;   (yas-global-mode 1))
+(use-package yasnippet
+  :diminish yas-minor-mode
+  :config
+  (yas-global-mode 1))
 
-; (use-package multiple-cursors)
+(use-package multiple-cursors)
 
 ;; *  Coq
+;; Moves subscript _a to \_a
+
+(defvar sm-quail-activate-hook-done nil)
+(defun sm-quail-activate-hook ()
+  (unless (member (quail-name) sm-quail-activate-hook-done)
+    (push (quail-name) sm-quail-activate-hook-done)
+    (when (member (quail-name) '("TeX"))
+      ;; Copy the "_..." bindings to "\_...".
+      (setf (alist-get ?_ (cdr (alist-get ?\\ (quail-map))))
+            (alist-get ?_ (quail-map)))
+      ;; Remove the "_..." bindings.
+      (setf (alist-get ?_ (quail-map)) nil)
+      (let ((quail-current-package (assoc "TeX" quail-package-alist)))
+        (quail-define-rules ((append . t))
+                            ("^\\alpha" ?ᵅ)
+                            ("\\Phi" ?Φ)
+                            ("\\fun"    ?λ)
+                            ("\\mult"   ?⋅)
+                            ("\\ent"    ?⊢)
+                            ("\\valid"  ?✓)
+                            ("\\diamond" ?◇)
+                            ("\\box"    ?□)
+                            ("\\bbox"   ?■)
+                            ("\\later"  ?▷)
+                            ("\\pred"   ?φ)
+                            ("\\and"    ?∧)
+                            ("\\or"     ?∨)
+                            ("\\comp"   ?∘)
+                            ("\\ccomp"  ?◎)
+                            ("\\all"    ?∀)
+                            ("\\ex"     ?∃)
+                            ("\\to"     ?→)
+                            ("\\sep"    ?∗)
+                            ("\\colon"  ?∷)
+                            ("\\col"    ?∷)
+                            ("\\lc"     ?⌜)
+                            ("\\rc"     ?⌝)
+                            ("\\Lc"     ?⎡)
+                            ("\\Rc"     ?⎤)
+                            ("\\lam"    ?λ)
+                            ("\\empty"  ?∅)
+                            ("\\Lam"    ?Λ)
+                            ("\\Sig"    ?Σ)
+                            ("\\sig"    ?σ)
+                            ("\\-"      ?∖)
+                            ("\\aa"     ?●)
+                            ("\\af"     ?◯)
+                            ("\\auth"   ?●)
+                            ("\\frag"   ?◯)
+                            ("\\iff"    ?↔)
+                            ("\\gname"  ?γ)
+                            ("\\incl"   ?≼)
+                            ("\\latert" ?▶)
+                            ("\\light" ?⚡)
+                            ("\\update" ?⇝))))))
+(add-hook 'quail-activate-hook #'sm-quail-activate-hook)
+
+(setq coq-smie-user-tokens
+      '(("∗" . "*")
+	("-∗" . "->")
+	("∗-∗" . "<->")
+	("==∗" . "->")
+	("⊢" . "->")
+	("⊣⊢" . "<->")
+	("⋅" . "*")
+	(":>" . ":=")
+	("by" . "now")
+	("forall" . "now")))
 
 (use-package proof-general
   :mode ("\\.v\\'" . coq-mode)
-  :init (custom-set-variables '(coq-prog-name "~/.opam/default/bin/coqtop")))
+  :custom
+  (proof-three-window-mode-policy 'hybrid)
+  (proof-splash-enable nil)
+  (coq-compile-before-require t)
+  (coq-compile-vos 'vos-and-vok)
+  (proof-omit-proofs-option t)
+  ;; (coq-diffs 'on)
+  (proof-script-fly-past-comments t)
+  ;; (add-hook 'coq-mode-hook (lambda () (undo-tree-mode 1)))
+  (coq-prog-name "~/.opam/default/bin/coqtop")
+  :init
+  (setq coq-smie-user-tokens
+	'(("∗" . "*")
+	  ("-∗" . "->")
+	  ("∗-∗" . "<->")
+	  ("==∗" . "->")
+	  ("⊢" . "->")
+	  ("⊣⊢" . "<->")
+	  ("⋅" . "*")
+	  (":>" . ":=")
+	  ("by" . "now")
+	  ("forall" . "now")))
+  (add-hook 'coq-mode-hook (lambda ()
+			     (undo-tree-mode 1)
+			     (set-input-method "TeX"))))
 
 (use-package company-coq
   :config
-  (add-hook 'coq-mode-hook #'company-coq-mode))
+  ;; (add-hook 'coq-mode-hook #'company-coq-mode)
+  :custom
+  (company-coq-disabled-features '(prettify-symbols))
+  (company-coq-live-on-the-edge t))
 
+;; * Custom functions
 
-;; Useful function for reaniming the current buffer and file.
+(defun edit-init ()
+  "Open the init file."
+  (interactive)
+  (find-file user-init-file))
+
+;; Useful function for renaming the current file and buffer.
 ;; From https://stackoverflow.com/questions/384284/how-do-i-rename-an-open-file-in-emacs
 (defun rename-file-and-buffer (new-name)
   "Renames both current buffer and file it's visiting to NEW-NAME."
@@ -299,15 +555,41 @@
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
 
+(defun fill-paragraph-one-sentence-per-line (&optional P)
+  "When called with prefix argument call `fill-paragraph'.
+Otherwise split the current paragraph into one sentence per line."
+  (interactive "P")
+  (if (not P)
+      (save-excursion
+        (let ((fill-column 12345678)) ;; relies on dynamic binding
+          (fill-paragraph) ;; this will not work correctly if the paragraph is
+                           ;; longer than 12345678 characters (in which case the
+                           ;; file must be at least 12MB long. This is unlikely.)
+          (let ((end (save-excursion
+                       (forward-paragraph 1)
+                       (backward-sentence)
+                       (point-marker))))  ;; remember where to stop
+            (beginning-of-line)
+            (while (progn (forward-sentence)
+                          (<= (point) (marker-position end)))
+              (just-one-space) ;; leaves only one space, point is after it
+              (delete-char -1) ;; delete the space
+              (newline)        ;; and insert a newline
+              (LaTeX-indent-line) ;; I only use this in combination with late, so this makes sense
+              ))))
+    ;; otherwise do ordinary fill paragraph
+    (fill-paragraph P)))
+
+;; (use-package rustic)
+
 ;; Garbage inserted by Emacs
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(coq-prog-name "~/.opam/default/bin/coqtop")
  '(package-selected-packages
-   '(evil-numbers evil-surround which-key use-package treemacs-all-the-icons smartparens ripgrep rainbow-delimiters proof-general projectile neotree markdown-mode magit highlight-indent-guides gruvbox-theme git-gutter general exec-path-from-shell evil-commentary evil-collection doom-themes doom-modeline diminish dashboard counsel company-coq company-auctex all-the-icons-ivy)))
+   '(default-text-scale multiple-cursors ws-butler which-key wgrep vterm-toggle use-package undo-tree treemacs-projectile treemacs-evil treemacs-all-the-icons smex smartparens rustic ripgrep rainbow-delimiters proof-general neotree lsp-ui lsp-ivy ivy-posframe ivy-avy idle-highlight-mode idle-highlight-in-visible-buffers-mode highlight-indent-guides gruvbox-theme good-scroll git-gutter general forge flycheck fast-scroll exec-path-from-shell evil-surround evil-numbers evil-commentary evil-collection doom-themes doom-modeline diminish dashboard dap-mode counsel-projectile company-posframe company-coq company-auctex biblio almost-mono-themes all-the-icons-ivy)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

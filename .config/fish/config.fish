@@ -1,24 +1,16 @@
-set PATH /home/simon/.local/bin /home/simon/.npm-packages/bin /home/simon/.cabal/bin /home/simon/.gem/ruby/2.5.0/bin $PATH
+set PATH ~/.local/bin ~/.npm-packages/bin ~/.cabal/bin ~/.gem/ruby/2.5.0/bin $PATH
 set PATH $HOME/go/bin $PATH
 
-alias b='upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -E "state|time\ to\ full|percentage"'
-alias t='date'
-alias sus='systemctl suspend'
-alias shut='systemctl poweroff'
-alias lu='light -U 10'
-alias la='light -A 10'
+fish_add_path ~/.cargo/bin
+
+set -x LANG en_US.UTF-8
 alias cat='bat'
 alias l='exa'
 abbr -a g git
 abbr -a gs 'git status'
 
-set -x ANDROID_HOME /home/simon/Android/Sdk
 set -x EDITOR nvim
-set -x PASSWORD_STORE_DIR /home/simon/Dropbox/password-store
 set -x BAT_THEME OneHalfLight
-set -x PASSWORD_STORE_DIR /home/simon/Dropbox/password-store
-
-bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh
 
 # function fish_prompt
   # powerline-shell --shell bare $status
@@ -30,3 +22,11 @@ bass source ~/.nix-profile/etc/profile.d/nix{,-daemon}.sh
         # source $AUTOJUMP_PATH
     # end
 # end
+
+# opam configuration
+source /Users/simon/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
+
+# iTerm2 shell integration
+source ~/.iterm2_shell_integration.(basename $SHELL)
+
+set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME ; set -gx PATH $HOME/.cabal/bin $PATH /Users/simon/.ghcup/bin # ghcup-env
