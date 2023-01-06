@@ -58,6 +58,11 @@ require('packer').startup(function(use)
     end
   }
 
+  use {
+    'nvim-lualine/lualine.nvim',
+    requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+  }
+
   -- General editing
 	use 'tpope/vim-commentary' -- Comment action
 
@@ -75,6 +80,8 @@ require('packer').startup(function(use)
     "windwp/nvim-autopairs",
       config = function() require("nvim-autopairs").setup {} end
   }
+
+  use 'ntpeters/vim-better-whitespace'
 
   use {
     'nvim-treesitter/nvim-treesitter',
@@ -256,10 +263,6 @@ vim.keymap.set('n', '<leader>o', require('nvim-window').pick, {})
 -- use 'wellle/targets.vim'
 -- use 'andymass/vim-matchup' " even better %
 -- 
--- use 'nvim-lualine/lualine.nvim'
--- " If you want to have icons in your statusline choose one of these
--- use 'kyazdani42/nvim-web-devicons'
--- 
 -- " For prose
 -- " let g:goyo_height = '100%'
 -- " use 'junegunn/goyo.vim'
@@ -421,6 +424,14 @@ vim.api.nvim_create_autocmd('LspAttach', {
 local telescope = require('telescope')
 -- telescope.load_extension('projects')
 telescope.load_extension('file_browser')
+telescope.setup {
+  pickers = {
+    buffers = {
+      ignore_current_buffer = true,
+      sort_mru = true,
+    },
+  },
+}
 local builtin = require('telescope.builtin')
 
 -- require'telescope'.extensions.projects.projects{}
@@ -436,3 +447,5 @@ vim.api.nvim_set_keymap("n", "<space>F", ":Telescope file_browser<CR>", { norema
 -- Emacs-style command list
 -- nnoremap <M-x> :Commands<CR>
 vim.keymap.set('n', 'M-x', builtin.commands, {})
+
+require('lualine').setup()
