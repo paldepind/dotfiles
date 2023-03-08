@@ -5,14 +5,22 @@ return {
     "karb94/neoscroll.nvim",
     opts = {},
   },
-	"lukas-reineke/indent-blankline.nvim",
-	{ -- Startup screen
-		"goolord/alpha-nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
-		config = function()
-			require("alpha").setup(require("alpha.themes.startify").config)
-		end,
+
+  { -- Only show colorcolumn when a line in the buffer is too long
+    "m4xshen/smartcolumn.nvim",
+    opts = {}
   },
+
+  "lukas-reineke/indent-blankline.nvim",
+
+  { -- Startup screen
+    "goolord/alpha-nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("alpha").setup(require("alpha.themes.startify").config)
+    end,
+  },
+
   { -- Highlights the word under cursor using LSP or regex.
     "RRethy/vim-illuminate",
     event = { "BufReadPost", "BufNewFile" },
@@ -64,5 +72,22 @@ return {
       "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
       "MunifTanjim/nui.nvim",
     },
+  },
+
+  { -- Highlighting of TODO/FIXME/NOTE/... comments.
+    "folke/todo-comments.nvim",
+    cmd = { "TodoTelescope" }, -- "TodoTrouble"
+    event = { "BufReadPost", "BufNewFile" },
+    config = true,
+    keys = {
+      { "]t", function() require("todo-comments").jump_next() end, desc = "Next todo comment" },
+      { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous todo comment" },
+      -- { "<leader>xt", "<cmd>TodoTrouble<cr>", desc = "Todo (Trouble)" },
+      -- { "<leader>xT", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
+      -- { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo" },
+    },
+    -- dependencies = {
+    --   "trouble"
+    -- }
   },
 }

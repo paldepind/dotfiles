@@ -31,6 +31,16 @@ return {
       { i(1), i(0), rep(1) }
     )
   ),
+  s(
+    { trig="Def", dscr="A Coq definition", snippetType="autosnippet" },
+    fmta(
+      [[
+        Definition <> : <> :=
+          <>.
+      ]],
+      { i(1), i(2), i(0) }
+    )
+  ),
   -- Unicode
   s({ trig = "\\wand", snippetType = "autosnippet" }, { t("-∗") }),
   s({ trig = "\\lc", snippetType = "autosnippet" }, { t("⌜ "), i(1), t(" ⌝") }),
@@ -39,6 +49,8 @@ return {
   s({ trig = "\\Rc", snippetType = "autosnippet" }, { t("⎤") }),
   texs("sub", "⊆"),
   texs("sqsub", "⊑"),
+  texs("cup", "∪"),
+  texs("cap", "∩"),
   texs("upd", "⇝"),
   texs("Phi"   , "Φ"),
   texs("fun"   , "λ"),
@@ -58,6 +70,8 @@ return {
   texs("all"   , "∀"),
   texs("ex"    , "∃"),
   texs("to"    , "→"),
+  texs("from"  , "←"),
+  texs("fto", "↔"),
   texs("sep"   , "∗"),
   texs("col"   , "∷"),
   texs("lam"   , "λ"),

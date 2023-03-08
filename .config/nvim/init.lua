@@ -50,13 +50,13 @@ vim.opt.rtp:prepend(lazypath)
 -- Now lazy is certain to be present.
 
 require("lazy").setup({
-	{
-		"kosayoda/nvim-lightbulb",
-		dependencies = "antoinemadec/FixCursorHold.nvim", -- Remove at some point when upstream fix is released
-	},
+  {
+    "kosayoda/nvim-lightbulb",
+    dependencies = "antoinemadec/FixCursorHold.nvim", -- Remove at some point when upstream fix is released
+  },
 
-	-- Color schemes
-	{
+  -- Color schemes
+  {
     "rmehri01/onenord.nvim",
     lazy = false,
     priority = 1000,
@@ -79,111 +79,111 @@ require("lazy").setup({
     end,
     dependencies = { "tjdevries/colorbuddy.nvim" },
   },
-	{ "projekt0n/github-nvim-theme", version = "v0.0.7", lazy = true },
-	{ "morhetz/gruvbox", lazy = true },
-	{ "catppuccin/nvim", name = "catppuccin", lazy = true },
-	{ "savq/melange", lazy = true },
-	{ "rose-pine/neovim", name = "rose-pine", lazy = true },
-	{ "EdenEast/nightfox.nvim", lazy = true },
+  { "projekt0n/github-nvim-theme", version = "v0.0.7", lazy = true },
+  { "morhetz/gruvbox", lazy = true },
+  { "catppuccin/nvim", name = "catppuccin", lazy = true },
+  { "savq/melange", lazy = true },
+  { "rose-pine/neovim", name = "rose-pine", lazy = true },
+  { "EdenEast/nightfox.nvim", lazy = true },
 
-	-- UI/UX related plugins
-	{
-		"nvim-lualine/lualine.nvim",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
+  -- UI/UX related plugins
+  {
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
   },
 
-	-- General editing
-	"numToStr/Comment.nvim",
+  -- General editing
+  "numToStr/Comment.nvim",
 
-	{
-		"kylechui/nvim-surround",
-		version = "*", -- Use for stability; omit to use `main` branch for the latest features
-		config = function()
-			require("nvim-surround").setup({
-				-- Configuration here, or leave empty to use defaults
-			})
-		end,
+  {
+    "kylechui/nvim-surround",
+    version = "*", -- Use for stability; omit to use `main` branch for the latest features
+    config = function()
+      require("nvim-surround").setup({
+        -- Configuration here, or leave empty to use defaults
+      })
+    end,
   },
 
-	{
-		"windwp/nvim-autopairs",
-		config = function()
-			require("nvim-autopairs").setup({})
-		end,
+  {
+    "windwp/nvim-autopairs",
+    config = function()
+      require("nvim-autopairs").setup({})
+    end,
   },
 
-	"ntpeters/vim-better-whitespace",
+  "ntpeters/vim-better-whitespace",
 
-	{
-		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
   },
 
-	{
-		"abecodes/tabout.nvim",
-		config = function()
-			require("tabout").setup({
-				tabkey = "<Tab>", -- key to trigger tabout, set to an empty string to disable
-				backwards_tabkey = "<S-Tab>", -- key to trigger backwards tabout, set to an empty string to disable
-				act_as_tab = true, -- shift content if tab out is not possible
-				act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
-				default_tab = "<C-t>", -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
-				default_shift_tab = "<C-d>", -- reverse shift default action,
-				enable_backwards = true, -- well ...
-				completion = true, -- if the tabkey is used in a completion pum
-				tabouts = {
-					{ open = "'", close = "'" },
-					{ open = '"', close = '"' },
-					{ open = "`", close = "`" },
-					{ open = "(", close = ")" },
-					{ open = "[", close = "]" },
-					{ open = "{", close = "}" },
-				},
-				ignore_beginning = true, --[[ if the cursor is at the beginning of a filled element it will rather tab out than shift the content ]]
-				exclude = {}, -- tabout will ignore these filetypes
-			})
-		end,
-		dependencies = { "nvim-treesitter" }, -- or require if not used so far
-		-- after = { "nvim-cmp" }, -- if a completion plugin is using tabs load it before
+  {
+    "abecodes/tabout.nvim",
+    config = function()
+      require("tabout").setup({
+        tabkey = "<Tab>", -- key to trigger tabout, set to an empty string to disable
+        backwards_tabkey = "<S-Tab>", -- key to trigger backwards tabout, set to an empty string to disable
+        act_as_tab = true, -- shift content if tab out is not possible
+        act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+        default_tab = "<C-t>", -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
+        default_shift_tab = "<C-d>", -- reverse shift default action,
+        enable_backwards = true, -- well ...
+        completion = true, -- if the tabkey is used in a completion pum
+        tabouts = {
+          { open = "'", close = "'" },
+          { open = '"', close = '"' },
+          { open = "`", close = "`" },
+          { open = "(", close = ")" },
+          { open = "[", close = "]" },
+          { open = "{", close = "}" },
+        },
+        ignore_beginning = true, --[[ if the cursor is at the beginning of a filled element it will rather tab out than shift the content ]]
+        exclude = {}, -- tabout will ignore these filetypes
+      })
+    end,
+    dependencies = { "nvim-treesitter" }, -- or require if not used so far
+    -- after = { "nvim-cmp" }, -- if a completion plugin is using tabs load it before
   },
 
-	"L3MON4D3/LuaSnip",
-	"saadparwaiz1/cmp_luasnip",
+  "L3MON4D3/LuaSnip",
+  "saadparwaiz1/cmp_luasnip",
 
-	"https://gitlab.com/yorickpeterse/nvim-window.git",
+  "https://gitlab.com/yorickpeterse/nvim-window.git",
 
-	{
-		"nvim-telescope/telescope.nvim",
-		branch = "0.1.x",
-		dependencies = { { "nvim-lua/plenary.nvim" } },
+  {
+    "nvim-telescope/telescope.nvim",
+    branch = "0.1.x",
+    dependencies = { { "nvim-lua/plenary.nvim" } },
   },
-	{ "nvim-telescope/telescope-file-browser.nvim" },
-	{ "nvim-telescope/telescope-project.nvim" },
+  { "nvim-telescope/telescope-file-browser.nvim" },
+  { "nvim-telescope/telescope-project.nvim" },
 
-	"airblade/vim-rooter", -- Change the working directory to project root
-	-- use {
-	--   "ahmedkhalf/project.nvim",
-	--   config = function()
-	--     require("project_nvim").setup {}
-	--   end
-	-- }
+  "airblade/vim-rooter", -- Change the working directory to project root
+  -- use {
+  --   "ahmedkhalf/project.nvim",
+  --   config = function()
+  --     require("project_nvim").setup {}
+  --   end
+  -- }
 
-	-- Git related.
-	"lewis6991/gitsigns.nvim",
-	-- " use 'tpope/vim-fugitive'
-	-- " use 'rhysd/git-messenger.vim'
-	{
+  -- Git related.
+  "lewis6991/gitsigns.nvim",
+  -- " use 'tpope/vim-fugitive'
+  -- " use 'rhysd/git-messenger.vim'
+  {
     "TimUntersberger/neogit",
     dependencies = "nvim-lua/plenary.nvim",
     cmd = "Neogit"
   },
 
-	"neovim/nvim-lspconfig", -- Configurations for Nvim LSP
-	{
-		"https://git.sr.ht/~whynothugo/lsp_lines.nvim",
-		config = function()
-			require("lsp_lines").setup()
-		end,
+  "neovim/nvim-lspconfig", -- Configurations for Nvim LSP
+  {
+    "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+    config = function()
+      require("lsp_lines").setup()
+    end,
     keys = {
       { "<leader>D", function()
         local new_value = not vim.diagnostic.config().virtual_lines
@@ -192,15 +192,15 @@ require("lazy").setup({
     }
   },
 
-	-- Auto-completion
-	"hrsh7th/cmp-nvim-lsp",
-	"hrsh7th/cmp-buffer",
-	"hrsh7th/cmp-path",
-	"hrsh7th/cmp-cmdline",
-	"hrsh7th/nvim-cmp",
+  -- Auto-completion
+  "hrsh7th/cmp-nvim-lsp",
+  "hrsh7th/cmp-buffer",
+  "hrsh7th/cmp-path",
+  "hrsh7th/cmp-cmdline",
+  "hrsh7th/nvim-cmp",
 
-	-- Rust
-	{
+  -- Rust
+  {
     "simrat39/rust-tools.nvim",
     ft = "rust",
     config = function()
@@ -218,40 +218,27 @@ require("lazy").setup({
     end
   },
 
-	-- Coq
-	-- filetype plugin indent on
+  -- Coq
+  -- filetype plugin indent on
   {
     "whonore/coqtail",
     ft = "coq",
   },
   {
-		"phaazon/hop.nvim",
-		branch = "v2", -- optional but strongly recommended
-		config = function()
-			-- you can configure Hop the way you like here; see :h hop-config
-			require("hop").setup({ keys = "arstneiovmdhc,plfuwy" })
-		end,
+    "phaazon/hop.nvim",
+    branch = "v2", -- optional but strongly recommended
+    config = function()
+      -- you can configure Hop the way you like here; see :h hop-config
+      require("hop").setup({ keys = "arstneiovmdhc,plfuwy" })
+    end,
   },
-	-- 'ggandor/leap.nvim'
+  -- 'ggandor/leap.nvim'
 
-	{
+  {
     "ethanholz/nvim-lastplace",
      opts = {}
   },
 
-  {
-    "folke/todo-comments.nvim",
-    cmd = { "TodoTrouble", "TodoTelescope" },
-    event = { "BufReadPost", "BufNewFile" },
-    config = true,
-    keys = {
-      { "]t", function() require("todo-comments").jump_next() end, desc = "Next todo comment" },
-      { "[t", function() require("todo-comments").jump_prev() end, desc = "Previous todo comment" },
-      -- { "<leader>xt", "<cmd>TodoTrouble<cr>", desc = "Todo (Trouble)" },
-      -- { "<leader>xT", "<cmd>TodoTrouble keywords=TODO,FIX,FIXME<cr>", desc = "Todo/Fix/Fixme (Trouble)" },
-      -- { "<leader>st", "<cmd>TodoTelescope<cr>", desc = "Todo" },
-    },
-  },
   { import = "plugins" }
 })
 
@@ -262,26 +249,26 @@ require("Comment").setup {
 }
 
 require("nvim-treesitter.configs").setup({
-	-- A list of parser names, or "all"
-	ensure_installed = { "lua", "vim", "help", "rust", "markdown", "markdown_inline" },
+  -- A list of parser names, or "all"
+  ensure_installed = { "lua", "vim", "help", "rust", "markdown", "markdown_inline" },
 
-	-- Install parsers synchronously (only applied to `ensure_installed`)
-	sync_install = false,
+  -- Install parsers synchronously (only applied to `ensure_installed`)
+  sync_install = false,
 
-	-- Automatically install missing parsers when entering buffer
-	-- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
-	auto_install = false,
+  -- Automatically install missing parsers when entering buffer
+  -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+  auto_install = false,
 
-	highlight = {
-		-- `false` will disable the whole extension
-		enable = true,
+  highlight = {
+    -- `false` will disable the whole extension
+    enable = true,
 
-		-- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-		-- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-		-- Using this option may slow down your editor, and you may see some duplicate highlights.
-		-- Instead of true it can also be a list of languages
-		additional_vim_regex_highlighting = false,
-	},
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
+  },
 })
 
 
@@ -290,29 +277,29 @@ require("nvim-lightbulb").setup({ autocmd = { enabled = true } })
 local cmp = require("cmp")
 
 cmp.setup({
-	snippet = {
-		-- REQUIRED - you must specify a snippet engine
-		expand = function(args)
-			require("luasnip").lsp_expand(args.body) -- For `luasnip` users.
-		end,
-	},
-	window = {
-		-- completion = cmp.config.window.bordered(),
-		-- documentation = cmp.config.window.bordered(),
-	},
-	mapping = cmp.mapping.preset.insert({
-		["<C-b>"] = cmp.mapping.scroll_docs(-4),
-		["<C-f>"] = cmp.mapping.scroll_docs(4),
-		["<C-Space>"] = cmp.mapping.complete(),
-		["<C-e>"] = cmp.mapping.abort(),
-		["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-	}),
-	sources = cmp.config.sources({
-		{ name = "nvim_lsp" },
-		{ name = "luasnip" }, -- snippet plugin to use
-	}, {
-		{ name = "buffer" },
-	})
+  snippet = {
+    -- REQUIRED - you must specify a snippet engine
+    expand = function(args)
+      require("luasnip").lsp_expand(args.body) -- For `luasnip` users.
+    end,
+  },
+  window = {
+    -- completion = cmp.config.window.bordered(),
+    -- documentation = cmp.config.window.bordered(),
+  },
+  mapping = cmp.mapping.preset.insert({
+    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+    ["<C-f>"] = cmp.mapping.scroll_docs(4),
+    ["<C-Space>"] = cmp.mapping.complete(),
+    ["<C-e>"] = cmp.mapping.abort(),
+    ["<CR>"] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+  }),
+  sources = cmp.config.sources({
+    { name = "nvim_lsp" },
+    { name = "luasnip" }, -- snippet plugin to use
+  }, {
+    { name = "buffer" },
+  })
 })
 
 -- highlight yanked text
@@ -328,13 +315,13 @@ vim.keymap.set("n", "<leader>o", require("nvim-window").pick, {})
 -- luasnip setup
 require("luasnip").config.set_config({ -- Setting LuaSnip config
 
-	-- Enable autotriggered snippets
-	enable_autosnippets = true,
+  -- Enable autotriggered snippets
+  enable_autosnippets = true,
 
-	-- Use Tab (or some other key if you prefer) to trigger visual selection
-	store_selection_keys = "<Tab>",
+  -- Use Tab (or some other key if you prefer) to trigger visual selection
+  store_selection_keys = "<Tab>",
 
-	update_events = "TextChanged,TextChangedI", -- repeats are updated on every change
+  update_events = "TextChanged,TextChangedI", -- repeats are updated on every change
 })
 
 require("luasnip.loaders.from_lua").lazy_load({ paths = "~/.config/nvim/luasnippets/" })
@@ -411,19 +398,19 @@ vim.opt.background = "light" -- or "dark" for dark mode
 
 -- Toggle between light and dark background
 vim.keymap.set("n", "<leader>0", function()
-	if vim.opt.background:get() == "light" then
-		vim.opt.background = "dark"
-	else
-		vim.opt.background = "light"
-	end
+  if vim.opt.background:get() == "light" then
+    vim.opt.background = "dark"
+  else
+    vim.opt.background = "light"
+  end
 end, { noremap = true })
 
 require("nvim-window").setup({
-	-- The characters available for hinting windows.
-	chars = {
-		"a", "r", "s", "t", "n", "e", "i", "o", "v", "m", "d", "h", "c", ",", "p",
-		"l", "f", "u", "w", "y",
-	},
+  -- The characters available for hinting windows.
+  chars = {
+    "a", "r", "s", "t", "n", "e", "i", "o", "v", "m", "d", "h", "c", ",", "p",
+    "l", "f", "u", "w", "y",
+  },
 })
 --
 require("gitsigns").setup()
@@ -432,24 +419,24 @@ require("gitsigns").setup()
 
 -- Disable virtual_text since it's redundant due to lsp_lines.
 vim.diagnostic.config({
-	-- virtual_text = false,
-	virtual_text = true,
-	virtual_lines = false,
+  -- virtual_text = false,
+  virtual_text = true,
+  virtual_lines = false,
 })
 
 require("lspconfig").marksman.setup({})
 
 vim.api.nvim_create_autocmd("LspAttach", {
-	callback = function(args)
-		local client = vim.lsp.get_client_by_id(args.data.client_id)
-		if client.server_capabilities.hoverProvider then
-			vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = args.buf })
-		end
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client.server_capabilities.hoverProvider then
+      vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = args.buf })
+    end
 
-		vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, { buffer = args.buf })
-		vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = args.buf })
-		vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = args.buf })
-	end,
+    vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, { buffer = args.buf })
+    vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = args.buf })
+    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = args.buf })
+  end,
 })
 
 -- Format with LSP on save.
@@ -465,26 +452,26 @@ telescope.load_extension("file_browser")
 telescope.load_extension("project")
 
 telescope.setup({
-	pickers = {
-		buffers = {
-			ignore_current_buffer = true,
-			sort_mru = true,
-		},
-	},
-	defaults = {
-		mappings = {
-			i = {
-				["<esc>"] = actions.close,
-			},
-		},
-	},
-	extensions = {
-		project = {
-			base_dirs = {
-				{ "~/projects", max_depth = 3 },
-			},
-		},
-	},
+  pickers = {
+    buffers = {
+      ignore_current_buffer = true,
+      sort_mru = true,
+    },
+  },
+  defaults = {
+    mappings = {
+      i = {
+        ["<esc>"] = actions.close,
+      },
+    },
+  },
+  extensions = {
+    project = {
+      base_dirs = {
+        { "~/projects", max_depth = 3 },
+      },
+    },
+  },
 })
 
 -- Leap
@@ -516,10 +503,10 @@ vim.keymap.set("n", "<leader>M", builtin.oldfiles, {})
 vim.keymap.set("n", "<leader>K", builtin.colorscheme, {})
 -- Hop
 vim.keymap.set("n", "<leader>j", function()
-	hop.hint_lines({ direction = directions.AFTER_CURSOR })
+  hop.hint_lines({ direction = directions.AFTER_CURSOR })
 end, {})
 vim.keymap.set("n", "<leader>k", function()
-	hop.hint_lines({ direction = directions.BEFORE_CURSOR })
+  hop.hint_lines({ direction = directions.BEFORE_CURSOR })
 end, {})
 
 -- File browser from path of current buffer
@@ -531,11 +518,11 @@ vim.keymap.set("n", "<leader>f",
 vim.keymap.set("n", "<M-x>", builtin.commands, {})
 
 require("lualine").setup({
-	options = {
-		section_separators = "",
-		component_separators = "",
-		theme = "onenord",
+  options = {
+    section_separators = "",
+    component_separators = "",
+    theme = "onenord",
     -- section_separators = { left = '', right = '' },
     -- component_separators = { left = '', right = '' }
-	},
+  },
 })
