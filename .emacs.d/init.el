@@ -35,6 +35,7 @@
 (global-set-key (kbd "C-s-f") 'toggle-frame-fullscreen)
 (global-set-key (kbd "s-,") 'edit-init)
 (setq frame-resize-pixelwise t)
+(setq-default word-wrap t)
 
 ;; * Packages for aesthetics
 
@@ -61,21 +62,24 @@
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/white-paper-theme")
 ;; (load-theme 'white-paper t)
 
-;; A selection of fonts
-(set-face-attribute 'default nil
-                    ;; :family "Source Code Pro"
-                    ;; :family "IBM Plex Mono"
-                    ;; :family "Fira Code"
-                    :family "JetBrains Mono"
-                    ;; :family "Menlo"
-                    ;; :family "Monaco"
-                    ;; :family "Roboto Mono"
-                    :height 120
-                    :weight 'normal
-                    :width 'normal)
+;; ;; A selection of fonts
+;; (set-face-attribute 'default nil
+;;                     ;; :family "Source Code Pro"
+;;                     ;; :family "IBM Plex Mono"
+;;                     ;; :family "Fira Code"
+;;                     ;; :family "JetBrains Mono"
+;;                     :family "Fantasque Sans Mono" :height 160
+;;                     ;; :family "Cascadia Code" :height 135
+;;                     ;; :family "Menlo"
+;;                     ;; :family "Monaco"
+;;                     ;; :family "Roboto Mono"
+;;                     ;; :height 140
+;;                     :weight 'normal
+;;                     :width 'normal)
 
-;; (set-fontset-font "fontset-default" nil
-;;                   (font-spec :size 20 :name "Noto Sans Symbols"))
+(set-face-attribute 'default nil
+                    :family "Comic Code Ligatures" :height 120
+                    :weight 'medium)
 
 (use-package doom-modeline
   :hook (after-init . doom-modeline-mode))
@@ -442,7 +446,7 @@
       (let ((quail-current-package (assoc "TeX" quail-package-alist)))
         (quail-define-rules ((append . t))
                             ("^\\alpha" ?ᵅ)
-                            ("\\Phi" ?Φ)
+                            ("\\Phi"    ?Φ)
                             ("\\fun"    ?λ)
                             ("\\mult"   ?⋅)
                             ("\\ent"    ?⊢)
@@ -451,6 +455,7 @@
                             ("\\box"    ?□)
                             ("\\bbox"   ?■)
                             ("\\later"  ?▷)
+                            ("\\unit"   ?ε)
                             ("\\pred"   ?φ)
                             ("\\and"    ?∧)
                             ("\\or"     ?∨)
@@ -507,7 +512,7 @@
   ;; (coq-diffs 'on)
   (proof-script-fly-past-comments t)
   ;; (add-hook 'coq-mode-hook (lambda () (undo-tree-mode 1)))
-  (coq-prog-name "~/.opam/default/bin/coqtop")
+  ;; (coq-prog-name "~/.opam/default/bin/coqtop")
   :init
   (setq coq-smie-user-tokens
 	'(("∗" . "*")
@@ -588,6 +593,8 @@ Otherwise split the current paragraph into one sentence per line."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("51c71bb27bdab69b505d9bf71c99864051b37ac3de531d91fdad1598ad247138" "afa47084cb0beb684281f480aa84dab7c9170b084423c7f87ba755b15f6776ef" "e8882a809fb14f2307410a659846a06bfa58a2279ffb1f5aca0c3aecbcb6aaee" default))
  '(package-selected-packages
    '(default-text-scale multiple-cursors ws-butler which-key wgrep vterm-toggle use-package undo-tree treemacs-projectile treemacs-evil treemacs-all-the-icons smex smartparens rustic ripgrep rainbow-delimiters proof-general neotree lsp-ui lsp-ivy ivy-posframe ivy-avy idle-highlight-mode idle-highlight-in-visible-buffers-mode highlight-indent-guides gruvbox-theme good-scroll git-gutter general forge flycheck fast-scroll exec-path-from-shell evil-surround evil-numbers evil-commentary evil-collection doom-themes doom-modeline diminish dashboard dap-mode counsel-projectile company-posframe company-coq company-auctex biblio almost-mono-themes all-the-icons-ivy)))
 (custom-set-faces

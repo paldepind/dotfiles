@@ -225,6 +225,11 @@ require("lazy").setup({
     ft = "coq",
   },
   {
+    dir = "~/projects/nvim-cmp-lua-latex-symbols",
+    -- "kdheepak/cmp-latex-symbols",
+    -- ft = "coq",
+  },
+  {
     "phaazon/hop.nvim",
     branch = "v2", -- optional but strongly recommended
     config = function()
@@ -239,6 +244,10 @@ require("lazy").setup({
      opts = {}
   },
 
+  -- Fish shell
+  { "khaveesh/vim-fish-syntax" },
+
+  -- Import everything in the plugins directory
   { import = "plugins" }
 })
 
@@ -297,6 +306,12 @@ cmp.setup({
   sources = cmp.config.sources({
     { name = "nvim_lsp" },
     { name = "luasnip" }, -- snippet plugin to use
+    {
+      name = "lua-latex-symbols",
+      -- option = {
+      --   strategy = 0, -- mixed
+      -- },
+    },
   }, {
     { name = "buffer" },
   })
@@ -385,9 +400,10 @@ vim.cmd([[
 --
 -- use 'lervag/vimtex'
 -- let g:tex_flavor = 'latex'
--- let g:vimtex_view_method = 'skim'
+vim.g.vimtex_view_method = 'skim'
 -- nmap <localleader>v <plug>(vimtex-view)
---
+vim.g.vimtex_quickfix_open_on_warning = false
+
 vim.opt.background = "light" -- or "dark" for dark mode
 
 -- " Markdown
@@ -415,29 +431,73 @@ require("nvim-window").setup({
 --
 require("gitsigns").setup()
 
+-- Disable virtual_text since it's redundant due to lsp_lines.
+-- vim.diagnostic.config({
+--   -- virtual_text = false,
+--   virtual_text = true,
+--   virtual_lines = false,
+-- })
+
+local opts = { noremap=true, silent=true }
+vim.keymap.set('n', '<space>e', vim.diagnostic.open_float, opts)
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
+
 -- Language Servers
 
--- Disable virtual_text since it's redundant due to lsp_lines.
-vim.diagnostic.config({
-  -- virtual_text = false,
-  virtual_text = true,
-  virtual_lines = false,
-})
+local on_attach = function(client, bufnr)
+  -- Enable completion triggered by <c-x><c-o>
+  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-require("lspconfig").marksman.setup({})
+  -- Mappings.
+  local bufopts = { noremap=true, silent=true, buffer=bufnr }
+  vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+  vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+  vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+  -- vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
+  -- vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+  -- vim.keymap.set('n', '<leader>wl', function()
+  --   print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+  -- end, bufopts)
+  vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
+  vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, bufopts)
+  vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
+  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+  -- vim.keymap.set('n', '<leader>f', function() vim.lsp.buf.format { async = true } end, bufopts)
+end
 
-vim.api.nvim_create_autocmd("LspAttach", {
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client.server_capabilities.hoverProvider then
-      vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = args.buf })
-    end
-
-    vim.keymap.set("n", "<leader>r", vim.lsp.buf.rename, { buffer = args.buf })
-    vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = args.buf })
-    vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = args.buf })
-  end,
-})
+local lspconfig = require 'lspconfig'
+lspconfig.marksman.setup { on_attach = on_attach }
+lspconfig.texlab.setup {
+  on_attach = on_attach,
+  settings = {
+    texlab = {
+      diagnostics = {
+        allowedPatterns = { "$-" }, -- Regex that does not match anything as texlab errors are obnoxious and incorrect for my LaTeX files
+      }
+    }
+  }
+}
+lspconfig.ltex.setup {
+  on_attach = function(client, bufnr)
+    on_attach(client, bufnr)
+      require("ltex_extra").setup{
+        load_langs = { "en-US", "da-DK" },
+        init_check = true,
+        path = vim.fn.stdpath("config") .. "/spell", -- string : path to store dictionaries. Relative path uses current working directory
+        log_level = "none",
+      }
+    end,
+  settings = {
+    ltex = {
+      -- language = 'en-US',
+      diagnosticSeverity = 'information',
+    },
+  },
+}
 
 -- Format with LSP on save.
 vim.cmd([[autocmd BufWritePre *.rs lua vim.lsp.buf.format({ async = false })]])
