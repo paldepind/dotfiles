@@ -10,7 +10,7 @@ fish_add_path ~/projects/flutter/bin
 fish_add_path ~/projects/projectdo
 
 abbr -a b --function projectdo_build
-abbr -a s --function projectdo_run
+abbr -a r --function projectdo_run
 abbr -a t --function projectdo_test
 abbr -a p --function projectdo_tool
 
@@ -42,9 +42,13 @@ set -x BAT_THEME OneHalfLight
 # end
 
 # # A very simple prompt
-# function fish_prompt -d "Write out the prompt"
-#     printf '%s%s%s> ' (set_color $fish_color_cwd) (prompt_pwd) (set_color normal)
-# end
+if set -q fish_private_mode
+    # A simple terminal in private mode that does not show pwd, etc.
+    function fish_prompt -d "Write out the prompt"
+        # printf '%s%s%s> ' (set_color $fish_color_cwd) (prompt_pwd) (set_color normal)
+        printf '%s%s%s> ' (set_color $fish_color_cwd) (path basename $PWD) (set_color normal)
+    end
+end
 
 # opam configuration
 source /Users/simon/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
