@@ -3,3 +3,5 @@
 	email = simonfv@gmail.com
 [init]
 	defaultBranch = main
+[safe]
+	directory = /opt/flutter

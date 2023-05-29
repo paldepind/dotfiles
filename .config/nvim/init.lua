@@ -49,6 +49,8 @@ end
 vim.opt.rtp:prepend(lazypath)
 -- Now lazy is certain to be present.
 
+local on_attach
+
 require("lazy").setup({
   {
     "kosayoda/nvim-lightbulb",
@@ -169,7 +171,7 @@ require("lazy").setup({
   -- }
 
   -- Git related.
-  "lewis6991/gitsigns.nvim",
+  "lewis691/gitsigns.nvim",
   -- " use 'tpope/vim-fugitive'
   -- " use 'rhysd/git-messenger.vim'
   {
@@ -201,20 +203,20 @@ require("lazy").setup({
 
   -- Rust
   {
-    "simrat39/rust-tools.nvim",
+    "simrat3/rust-tools.nvim",
     ft = "rust",
     config = function()
       local rt = require("rust-tools")
-      rt.setup({
+      rt.setup {
         server = {
-          on_attach = function(_, bufnr)
-            -- Hover actions
+          on_attach = function(client, bufnr)
             vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
-            -- Code action groups
-            vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+            vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+            print(on_attach)
+            on_attach(client, bufnr)
           end,
         }
-      })
+      }
     end
   },
 
@@ -225,9 +227,9 @@ require("lazy").setup({
     ft = "coq",
   },
   {
-    dir = "~/projects/nvim-cmp-lua-latex-symbols",
-    -- "kdheepak/cmp-latex-symbols",
-    -- ft = "coq",
+    -- dir = "~/projects/nvim-cmp-lua-latex-symbols",
+    "kdheepak/cmp-latex-symbols",
+    ft = "coq",
   },
   {
     "phaazon/hop.nvim",
@@ -259,7 +261,7 @@ require("Comment").setup {
 
 require("nvim-treesitter.configs").setup({
   -- A list of parser names, or "all"
-  ensure_installed = { "lua", "vim", "help", "rust", "markdown", "markdown_inline" },
+  ensure_installed = { "lua", "vim", "rust", "markdown", "markdown_inline" },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
@@ -307,10 +309,10 @@ cmp.setup({
     { name = "nvim_lsp" },
     { name = "luasnip" }, -- snippet plugin to use
     {
-      name = "lua-latex-symbols",
-      -- option = {
-      --   strategy = 0, -- mixed
-      -- },
+      name = "latex_symbols",
+      option = {
+        strategy = 0, -- mixed
+      },
     },
   }, {
     { name = "buffer" },
@@ -446,7 +448,7 @@ vim.keymap.set('n', '<space>q', vim.diagnostic.setloclist, opts)
 
 -- Language Servers
 
-local on_attach = function(client, bufnr)
+on_attach = function(_, bufnr)
   -- Enable completion triggered by <c-x><c-o>
   vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
@@ -462,7 +464,7 @@ local on_attach = function(client, bufnr)
   -- vim.keymap.set('n', '<leader>wl', function()
   --   print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   -- end, bufopts)
-  vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
+  -- vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
   vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, bufopts)
   vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
   vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)

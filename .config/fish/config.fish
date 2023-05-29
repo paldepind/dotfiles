@@ -5,10 +5,21 @@ fish_add_path ~/.cabal/bin
 fish_add_path $HOME/go/bin
 fish_add_path ~/.cargo/bin
 # fish_add_path ~/flutter/flutter/bin
-fish_add_path ~/projects/flutter/bin
-
+# fish_add_path ~/projects/flutter/bin
+fish_add_path /opt/flutter/bin
 fish_add_path ~/projects/projectdo
 
+# environment variables
+set -x CHROME_EXECUTABLE chromium
+set -x EDITOR nvim
+set -x BAT_THEME OneHalfLight
+set -x LANG en_US.UTF-8
+
+# simpli aliases
+alias cat='bat'
+alias l='exa'
+
+# projectdo setup
 abbr -a b --function projectdo_build
 abbr -a r --function projectdo_run
 abbr -a t --function projectdo_test
@@ -23,16 +34,9 @@ function multicd
     echo cd (string repeat -n (math (string length -- $argv[1]) - 1) ../)
 end
 abbr --add dotdot --regex '^\.\.+$' --function multicd
-
-set -x LANG en_US.UTF-8
-alias cat='bat'
-alias l='exa'
 abbr -a g git
 abbr -a gs 'git status'
 abbr -a gc --set-cursor "git commit -m '%'"
-
-set -x EDITOR nvim
-set -x BAT_THEME OneHalfLight
 
 # begin
     # set --local AUTOJUMP_PATH /usr/share/autojump/autojump.fish
@@ -51,7 +55,7 @@ if set -q fish_private_mode
 end
 
 # opam configuration
-source /Users/simon/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
+source ~/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
 
 # iTerm2 shell integration
 # source ~/.iterm2_shell_integration.(basename $SHELL)

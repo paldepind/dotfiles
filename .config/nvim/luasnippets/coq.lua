@@ -8,7 +8,7 @@ end
 
 return {
   s(
-    { trig="Lem", dscr="A Coq lemma", snippetType="autosnippet" },
+    { trig="Lemma", dscr="A Coq lemma" },
     fmta(
       [[
         Lemma <> :
@@ -21,7 +21,7 @@ return {
     )
   ),
   s(
-    { trig = "Sec", snippetType = "autosnippet" },
+    { trig = "Section" },
     fmt(
       [[
         Section {}.
@@ -32,7 +32,7 @@ return {
     )
   ),
   s(
-    { trig="Def", dscr="A Coq definition", snippetType="autosnippet" },
+    { trig="Definition", dscr="A Coq definition" },
     fmta(
       [[
         Definition <> : <> :=
@@ -79,6 +79,7 @@ return {
   texs("Lam"   , "Λ"),
   texs("Sig"   , "Σ"),
   texs("sig"   , "σ"),
+  texs("Ome"   , "Ω"),
   texs("-"     , "∖"),
   texs("aa"    , "●"),
   texs("af"    , "◯"),
