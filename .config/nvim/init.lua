@@ -171,7 +171,7 @@ require("lazy").setup({
   -- }
 
   -- Git related.
-  "lewis691/gitsigns.nvim",
+  "lewis6991/gitsigns.nvim",
   -- " use 'tpope/vim-fugitive'
   -- " use 'rhysd/git-messenger.vim'
   {
@@ -203,7 +203,7 @@ require("lazy").setup({
 
   -- Rust
   {
-    "simrat3/rust-tools.nvim",
+    "simrat39/rust-tools.nvim",
     ft = "rust",
     config = function()
       local rt = require("rust-tools")
