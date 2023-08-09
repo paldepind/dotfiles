@@ -5,8 +5,8 @@ fish_add_path ~/.cabal/bin
 fish_add_path $HOME/go/bin
 fish_add_path ~/.cargo/bin
 # fish_add_path ~/flutter/flutter/bin
-# fish_add_path ~/projects/flutter/bin
-fish_add_path /opt/flutter/bin
+fish_add_path ~/projects/flutter/bin
+# fish_add_path /opt/flutter/bin
 fish_add_path ~/projects/projectdo
 
 # environment variables
@@ -15,7 +15,7 @@ set -x EDITOR nvim
 set -x BAT_THEME OneHalfLight
 set -x LANG en_US.UTF-8
 
-# simpli aliases
+# simple aliases
 alias cat='bat'
 alias l='exa'
 

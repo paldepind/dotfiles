@@ -20,6 +20,11 @@ vim.opt.ignorecase = true
 
 vim.opt.cursorline = true -- Highlight the current line
 
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Go to left window", remap = true })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to lower window", remap = true })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to upper window", remap = true })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to right window", remap = true })
+
 vim.opt.splitbelow = true -- create new splits below and to the right
 vim.opt.splitright = true
 vim.opt.signcolumn = "yes"
@@ -81,7 +86,6 @@ require("lazy").setup({
     end,
     dependencies = { "tjdevries/colorbuddy.nvim" },
   },
-  { "projekt0n/github-nvim-theme", version = "v0.0.7", lazy = true },
   { "morhetz/gruvbox", lazy = true },
   { "catppuccin/nvim", name = "catppuccin", lazy = true },
   { "savq/melange", lazy = true },
@@ -92,6 +96,12 @@ require("lazy").setup({
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
+  },
+  {
+    'echasnovski/mini.files',
+    main = 'mini.files',
+    version = false,
+    opts = {},
   },
 
   -- General editing
@@ -175,8 +185,9 @@ require("lazy").setup({
   -- " use 'tpope/vim-fugitive'
   -- " use 'rhysd/git-messenger.vim'
   {
-    "TimUntersberger/neogit",
+    "NeogitOrg/neogit",
     dependencies = "nvim-lua/plenary.nvim",
+    config = true,
     cmd = "Neogit"
   },
 

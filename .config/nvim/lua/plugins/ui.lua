@@ -43,10 +43,18 @@ return {
 
   { -- file explorer
     "nvim-neo-tree/neo-tree.nvim",
+    branch = "v3.x",
     cmd = "Neotree",
     keys = {
       {
-        "<D-S-e>", -- VSCode like mapping for the lulz
+        "<D-S-e>", -- VSCode like mapping
+        function()
+          require("neo-tree.command").execute({ toggle = true, dir = vim.loop.cwd() })
+        end,
+        desc = "Toggle NeoTree",
+      },
+      {
+        "<M-S-e>", -- VSCode like mapping
         function()
           require("neo-tree.command").execute({ toggle = true, dir = vim.loop.cwd() })
         end,
@@ -58,14 +66,8 @@ return {
     end,
     opts = {
       filesystem = {
-    --     bind_to_cwd = false,
-        follow_current_file = true,
+        follow_current_file = { enabled = true },
       },
-    --   window = {
-    --     mappings = {
-    --       ["<space>"] = "none",
-    --     },
-    --   },
     },
     dependencies = {
       "nvim-lua/plenary.nvim",
