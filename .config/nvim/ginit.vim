@@ -1,3 +1,3 @@
 " Set the font
-" Guifont Source Code Pro:h10
-Guifont SauceCodePro Nerd Font Mono:h10
+GuiFont Source Code Pro:h12
+" Guifont SauceCodePro Nerd Font Mono:h10

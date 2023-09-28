@@ -34,8 +34,8 @@ vim.opt.colorcolumn = "80"
 -- vim.opt.guifont = "FantasqueSansMono_Nerd_Font:h14"
 -- vim.opt.guifont = "Fantasque_Sans_Mono:h14"
 -- vim.opt.guifont = "Jetbrains_Mono:h12"
--- vim.opt.guifont = "Source_Code_Pro:h12"
-vim.opt.guifont = "Comic_Code_Ligatures_Medium_Nerd_Font_Complete:h13"
+vim.opt.guifont = "Source_Code_Pro:h12"
+-- vim.opt.guifont = "Comic_Code_Ligatures_Medium_Nerd_Font_Complete:h13"
 --
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", {})
 
@@ -186,7 +186,12 @@ require("lazy").setup({
   -- " use 'rhysd/git-messenger.vim'
   {
     "NeogitOrg/neogit",
-    dependencies = "nvim-lua/plenary.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",         -- required
+      "nvim-telescope/telescope.nvim", -- optional
+      "sindrets/diffview.nvim",        -- optional
+      "ibhagwan/fzf-lua",              -- optional
+    },
     config = true,
     cmd = "Neogit"
   },
@@ -220,12 +225,13 @@ require("lazy").setup({
       local rt = require("rust-tools")
       rt.setup {
         server = {
-          on_attach = function(client, bufnr)
-            vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
-            vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-            print(on_attach)
-            on_attach(client, bufnr)
-          end,
+          on_attach = on_attach,
+          -- on_attach = function(client, bufnr)
+          --   vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
+          --   vim.keymap.set('n', '<C-k>', vim.lsp.buf.hover, bufopts)
+          --   print(on_attach)
+          --   on_attach(client, bufnr)
+          -- end,
         }
       }
     end
@@ -469,7 +475,7 @@ on_attach = function(_, bufnr)
   vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
   vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+  vim.keymap.set('n', '<M-K>', vim.lsp.buf.signature_help, bufopts)
   -- vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
   -- vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
   -- vim.keymap.set('n', '<leader>wl', function()
@@ -511,6 +517,7 @@ lspconfig.ltex.setup {
     },
   },
 }
+lspconfig.gopls.setup { on_attach = on_attach }
 
 -- Format with LSP on save.
 vim.cmd([[autocmd BufWritePre *.rs lua vim.lsp.buf.format({ async = false })]])

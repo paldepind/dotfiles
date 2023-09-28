@@ -4,8 +4,8 @@ fish_add_path ~/.cabal/bin
 # fish_add_path ~/.gem/ruby/2.5.0/bin
 fish_add_path $HOME/go/bin
 fish_add_path ~/.cargo/bin
-# fish_add_path ~/flutter/flutter/bin
-fish_add_path ~/projects/flutter/bin
+fish_add_path ~/flutter/flutter/bin
+# fish_add_path ~/projects/flutter/bin
 # fish_add_path /opt/flutter/bin
 fish_add_path ~/projects/projectdo
 

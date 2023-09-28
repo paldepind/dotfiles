@@ -59,7 +59,7 @@ return {
   texs("valid" , "✓"),
   texs("diamond", "◇"),
   texs("box"   , "□"),
-  texs("bbox"  , "■"),
+  texs("plain"  , "■"),
   texs("later" , "▷"),
   texs("unit"  , "ε"),
   texs("phi", "φ"),
