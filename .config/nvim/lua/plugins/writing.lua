@@ -15,17 +15,6 @@ return {
     -- },
   },
 
-  -- { -- Zen Mode
-  --   "Pocco81/true-zen.nvim",
-  --   opts = {},
-  --   cmd = {
-  --     "TZAtaraxis",
-  --     "TZMinimalist",
-  --     "TZNarrow",
-  --     "TZFocus",
-  --   }
-  -- },
-
   { -- Zen Mode
     "folke/zen-mode.nvim",
     opts = {

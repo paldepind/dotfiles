@@ -4,13 +4,14 @@ fish_add_path ~/.cabal/bin
 # fish_add_path ~/.gem/ruby/2.5.0/bin
 fish_add_path $HOME/go/bin
 fish_add_path ~/.cargo/bin
-fish_add_path ~/flutter/flutter/bin
-# fish_add_path ~/projects/flutter/bin
+# fish_add_path ~/flutter/bin
+fish_add_path ~/projects/flutter/bin
 # fish_add_path /opt/flutter/bin
 fish_add_path ~/projects/projectdo
+fish_add_path ~/scripts
 
 # environment variables
-set -x CHROME_EXECUTABLE chromium
+# set -x CHROME_EXECUTABLE chromium
 set -x EDITOR nvim
 set -x BAT_THEME OneHalfLight
 set -x LANG en_US.UTF-8

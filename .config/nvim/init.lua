@@ -6,6 +6,7 @@ vim.opt.shiftwidth = 2
 vim.opt.tabstop = 2
 vim.opt.updatetime = 500 -- changes the time it takes to trigger "CursorHold"
 vim.opt.scrolloff = 5 --
+vim.opt.formatoptions = "tcqjro"
 
 -- set noshowmode
 -- " set wildmode=list:longest,full
@@ -500,6 +501,7 @@ lspconfig.texlab.setup {
     }
   }
 }
+
 lspconfig.ltex.setup {
   on_attach = function(client, bufnr)
     on_attach(client, bufnr)
@@ -517,6 +519,7 @@ lspconfig.ltex.setup {
     },
   },
 }
+
 lspconfig.gopls.setup { on_attach = on_attach }
 
 -- Format with LSP on save.
@@ -569,6 +572,7 @@ end, {remap=true})
 
 -- _ALL_ leader bindings go here (except for LSP ones).
 vim.api.nvim_set_keymap("n", "<leader>q", ":q<CR>", { noremap = true })
+vim.api.nvim_set_keymap("n", "<leader>Q", ":wqa<CR>", { noremap = true })
 vim.api.nvim_set_keymap("n", "<leader><Enter>", ":terminal<CR>", { noremap = true })
 vim.api.nvim_set_keymap("n", "<leader>w", ":w<CR>", { noremap = true })
 vim.api.nvim_set_keymap("n", "<leader>,", ":edit ~/.config/nvim/init.lua<CR>", { noremap = true })
