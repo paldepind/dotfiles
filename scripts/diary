@@ -1,0 +1,24 @@
+#!/bin/sh
+
+DIARY_PATH=~/Sync/diary
+
+date=$(date '+%Y/%m-%d.md')
+
+path=$DIARY_PATH/$(date '+%Y')
+file=$path/$(date '+%m-%d').md
+
+if [ ! -e $file ]; then
+  mkdir -p $path
+  touch $file
+  echo $(date '+%A, %d. %B') > $file
+  echo ======================================== >> $file
+fi
+
+echo "" >> $file
+echo $(date '+%H:%M') >> $file
+echo ---------------------------------------- >> $file
+echo "" >> $file
+echo "" >> $file
+
+nvim +ZenMode +startinsert + $file
+
