@@ -46,6 +46,11 @@ abbr -a gc --set-cursor "git commit -m '%'"
     # end
 # end
 
+# Emit an OSC-133;A (\E]133;A\E\\) sequence before each prompt to make jumping between prompts work in Foot
+function mark_prompt_start --on-event fish_prompt
+    echo -en "\e]133;A\e\\"
+end
+
 # # A very simple prompt
 if set -q fish_private_mode
     # A simple terminal in private mode that does not show pwd, etc.
