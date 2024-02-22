@@ -16,11 +16,12 @@
       - kanshi # dynamic display configuration
       - dunst
       - waybar
+      - fuzzel # launcher
     state: present
 
 - name: Ensure projects directory
   file:
-    path: "~/.config/{{ item }}"
+    path: "{{ dotfiles_target }}/{{ item }}"
     state: directory
   loop:
     - sway
@@ -28,8 +29,8 @@
 
 - name: Symlink config
   file:
-    src: "{{ dotfiles_dir }}/.config/{{ item }}"
-    dest: "~/.config/{{ item }}"
+    src: "{{ dotfiles_dir }}/{{ item }}"
+    dest: "{{ dotfiles_target }}/{{ item }}"
     state: link
   loop:
     - sway/config

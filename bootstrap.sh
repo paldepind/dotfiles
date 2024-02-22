@@ -7,6 +7,7 @@ fi
 
 if ! command -v gh &> /dev/null; then
 	sudo dnf install -q gh
+  # NOTE: On Arch this package is called github-cli
 fi
 
 if [ ! -e ~/.ssh/id_ed25519.pub ]; then

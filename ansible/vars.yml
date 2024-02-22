@@ -1,3 +1,3 @@
 ---
-dotfiles_repo: https://github.com/paldepind/dotfiles.git
-dotfiles_dir: ~/config
+dotfiles_dir: ~/config/dotconfig
+dotfiles_target: ~/.config

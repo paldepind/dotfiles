@@ -421,6 +421,7 @@ vim.cmd([[
 -- use 'lervag/vimtex'
 -- let g:tex_flavor = 'latex'
 vim.g.vimtex_view_method = 'skim'
+-- vim.g.vimtex_view_method = 'zathura'
 -- nmap <localleader>v <plug>(vimtex-view)
 vim.g.vimtex_quickfix_open_on_warning = false
 

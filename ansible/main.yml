@@ -16,16 +16,17 @@
           - neovim
           - ripgrep
           - fish
-          - gh
           - fzf
           - bat
           - gcc
           - go
         state: present
-    - user:
+    - name: Setup fish shell
+      user:
         name: simon
         shell: /bin/fish
         state: present
+      become: true
     - name: Ensure projects directory
       file:
         path: ~/projects
@@ -34,28 +35,29 @@
     - name: Configure GNOME
       include_tasks: tasks/gnome.yml
 
-    - name: Configure Sway environment
-      include_tasks: tasks/sway.yml
-
     - name: Ensure projects directory
       file:
-        path: "~/{{ item }}"
+        path: "{{ dotfiles_target }}/{{ item }}"
         state: directory
       loop:
-        - .config/fish
-        - .config/nvim
-        - .config/git
+        - fish
+        - nvim
+        - git
 
     - name: Symlink dotfiles
       file:
         src: "{{ dotfiles_dir }}/{{ item }}"
-        dest: "~/{{ item }}"
+        dest: "{{ dotfiles_target }}/{{ item }}"
         state: link
+        force: true
       loop:
-        - .config/fish/config.fish
-        - .config/fish/fish_plugins
-        - .config/git/config
-        - .config/nvim/init.lua
-        - .config/nvim/lua
+        - fish/config.fish
+        - fish/fish_plugins
+        - git/config
+        - nvim/init.lua
+        - nvim/lua
         # - .config/nvim/luasnippets
+
+    - name: Configure Sway environment
+      include_tasks: tasks/sway.yml
 

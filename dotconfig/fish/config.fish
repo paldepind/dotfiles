@@ -19,6 +19,7 @@ set -x LANG en_US.UTF-8
 # simple aliases
 alias cat='bat'
 alias l='exa'
+alias nn='cd ~/Sync/notes; nvim'
 
 # projectdo setup
 abbr -a b --function projectdo_build
