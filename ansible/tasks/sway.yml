@@ -1,0 +1,36 @@
+# Setup things related to Sway
+---
+- name: Install packages needed in Sway
+  become: true
+  package:
+    name:
+      - sway
+      - swaylock
+      - swaybg
+      - swayidle
+      - foot
+      - bemenu
+      - brightnessctl
+      - network-manager-applet
+      - blueman # bluetooth applet
+      - kanshi # dynamic display configuration
+      - dunst
+      - waybar
+    state: present
+
+- name: Ensure projects directory
+  file:
+    path: "~/.config/{{ item }}"
+    state: directory
+  loop:
+    - sway
+    - waybar
+
+- name: Symlink config
+  file:
+    src: "{{ dotfiles_dir }}/.config/{{ item }}"
+    dest: "~/.config/{{ item }}"
+    state: link
+  loop:
+    - sway/config
+    - waybar/config

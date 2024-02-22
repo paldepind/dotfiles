@@ -1,0 +1,16 @@
+---
+- name: Install basic tools needed to configure GNOMEq
+  become: true
+  package:
+    name:
+      - python3-psutil
+    state: present
+- name: Show battery percentage
+  community.general.dconf:
+    key: "/org/gnome/desktop/interface/scaling-factor"
+    value: 1.5
+- name: Configure available keyboard layouts in Cinnamon
+  community.general.dconf:
+    key: "/org/gnome/desktop/wm/keybindings/close"
+    value: "['<Super>q']"
+    state: present

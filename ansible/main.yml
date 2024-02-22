@@ -1,0 +1,61 @@
+---
+- hosts: all
+  vars_files:
+    - vars.yml
+
+ # pre_tasks:
+ #   - name: Update apt cache if needed
+ #     apt: update_cache=yes cache_valid_time=3600
+
+  tasks:
+    - name: Install basic tools
+      become: yes
+      package:
+        name:
+          - git
+          - neovim
+          - ripgrep
+          - fish
+          - gh
+          - fzf
+          - bat
+          - gcc
+          - go
+        state: present
+    - user:
+        name: simon
+        shell: /bin/fish
+        state: present
+    - name: Ensure projects directory
+      file:
+        path: ~/projects
+        state: directory
+
+    - name: Configure GNOME
+      include_tasks: tasks/gnome.yml
+
+    - name: Configure Sway environment
+      include_tasks: tasks/sway.yml
+
+    - name: Ensure projects directory
+      file:
+        path: "~/{{ item }}"
+        state: directory
+      loop:
+        - .config/fish
+        - .config/nvim
+        - .config/git
+
+    - name: Symlink dotfiles
+      file:
+        src: "{{ dotfiles_dir }}/{{ item }}"
+        dest: "~/{{ item }}"
+        state: link
+      loop:
+        - .config/fish/config.fish
+        - .config/fish/fish_plugins
+        - .config/git/config
+        - .config/nvim/init.lua
+        - .config/nvim/lua
+        # - .config/nvim/luasnippets
+
