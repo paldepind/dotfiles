@@ -25,6 +25,7 @@ vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Go to left window", remap = tru
 vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to lower window", remap = true })
 vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to upper window", remap = true })
 vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to right window", remap = true })
+vim.keymap.set("n", "H", ":tabnext<CR>", { desc = "Go to right window", remap = true })
 
 vim.opt.splitbelow = true -- create new splits below and to the right
 vim.opt.splitright = true
@@ -98,12 +99,12 @@ require("lazy").setup({
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
   },
-  {
-    'echasnovski/mini.files',
-    main = 'mini.files',
-    version = false,
-    opts = {},
-  },
+  -- {
+  --   'echasnovski/mini.files',
+  --   main = 'mini.files',
+  --   version = false,
+  --   opts = {},
+  -- },
 
   -- General editing
   "numToStr/Comment.nvim",
@@ -166,12 +167,21 @@ require("lazy").setup({
   "https://gitlab.com/yorickpeterse/nvim-window.git",
 
   {
+    "ibhagwan/fzf-lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" }, -- for icon support
+    config = function()
+      -- calling `setup` is optional for customization
+      require("fzf-lua").setup({})
+    end
+  },
+  {
     "nvim-telescope/telescope.nvim",
     branch = "0.1.x",
     dependencies = { { "nvim-lua/plenary.nvim" } },
   },
   { "nvim-telescope/telescope-file-browser.nvim" },
   { "nvim-telescope/telescope-project.nvim" },
+  { "neanias/telescope-lines.nvim" },
 
   "airblade/vim-rooter", -- Change the working directory to project root
   -- use {
@@ -181,21 +191,6 @@ require("lazy").setup({
   --   end
   -- }
 
-  -- Git related.
-  "lewis6991/gitsigns.nvim",
-  -- " use 'tpope/vim-fugitive'
-  -- " use 'rhysd/git-messenger.vim'
-  {
-    "NeogitOrg/neogit",
-    dependencies = {
-      "nvim-lua/plenary.nvim",         -- required
-      "nvim-telescope/telescope.nvim", -- optional
-      "sindrets/diffview.nvim",        -- optional
-      "ibhagwan/fzf-lua",              -- optional
-    },
-    config = true,
-    cmd = "Neogit"
-  },
 
   "neovim/nvim-lspconfig", -- Configurations for Nvim LSP
   {
@@ -239,39 +234,39 @@ require("lazy").setup({
   },
 
   -- TypeScript & JavaScript
-  {
-    "pmizio/typescript-tools.nvim",
-    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
-    opts = {},
-    config = function()
-      local tt = require("typescript-tools")
-      tt.setup {
-        on_attach = function()
-          -- -- Enable completion triggered by <c-x><c-o>
-          -- vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+  -- {
+  --   "pmizio/typescript-tools.nvim",
+  --   dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+  --   opts = {},
+  --   config = function()
+  --     local tt = require("typescript-tools")
+  --     tt.setup {
+  --       on_attach = function()
+  --         -- -- Enable completion triggered by <c-x><c-o>
+  --         -- vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-          -- Mappings.
-          local bufopts = { noremap=true, silent=true, buffer=bufnr }
-          vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
-          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-          vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
-          vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-          vim.keymap.set('n', '<M-K>', vim.lsp.buf.signature_help, bufopts)
-          -- vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-          -- vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-          -- vim.keymap.set('n', '<leader>wl', function()
-          --   print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-          -- end, bufopts)
-          -- vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
-          --
-          vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, bufopts)
-          vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
-          vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-        end
-        -- on_attach = on_attach,
-      }
-    end
-  },
+  --         -- Mappings.
+  --         local bufopts = { noremap=true, silent=true, buffer=bufnr }
+  --         vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
+  --         vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
+  --         vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
+  --         vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
+  --         vim.keymap.set('n', '<M-K>', vim.lsp.buf.signature_help, bufopts)
+  --         -- vim.keymap.set('n', '<leader>wa', vim.lsp.buf.add_workspace_folder, bufopts)
+  --         -- vim.keymap.set('n', '<leader>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
+  --         -- vim.keymap.set('n', '<leader>wl', function()
+  --         --   print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+  --         -- end, bufopts)
+  --         vim.keymap.set('n', '<leader>D', vim.lsp.buf.type_definition, bufopts)
+  --         --
+  --         vim.keymap.set('n', '<leader>r', vim.lsp.buf.rename, bufopts)
+  --         vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, bufopts)
+  --         vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+  --       end
+  --       -- on_attach = on_attach,
+  --     }
+  --   end
+  -- },
 
   -- Coq
   -- filetype plugin indent on
@@ -314,7 +309,7 @@ require("Comment").setup {
 
 require("nvim-treesitter.configs").setup({
   -- A list of parser names, or "all"
-  ensure_installed = { "lua", "vim", "rust", "markdown", "markdown_inline" },
+  ensure_installed = { "lua", "vim", "rust", "markdown", "markdown_inline", "typescript" },
 
   -- Install parsers synchronously (only applied to `ensure_installed`)
   sync_install = false,
@@ -558,6 +553,17 @@ lspconfig.ltex.setup {
 
 lspconfig.gopls.setup { on_attach = on_attach }
 
+lspconfig.eslint.setup({
+  on_attach = function(client, bufnr)
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = bufnr,
+      command = "EslintFixAll",
+    })
+  end,
+})
+
+lspconfig.tsserver.setup { on_attach = on_attach }
+
 -- Format with LSP on save.
 vim.cmd([[autocmd BufWritePre *.rs lua vim.lsp.buf.format({ async = false })]])
 
@@ -569,6 +575,7 @@ local builtin = require("telescope.builtin")
 
 telescope.load_extension("file_browser")
 telescope.load_extension("project")
+telescope.load_extension("lines")
 
 telescope.setup({
   pickers = {
@@ -614,11 +621,14 @@ vim.api.nvim_set_keymap("n", "<leader>w", ":w<CR>", { noremap = true })
 vim.api.nvim_set_keymap("n", "<leader>,", ":edit ~/.config/nvim/init.lua<CR>", { noremap = true })
 vim.keymap.set("n", "<leader>g", function() require("neogit").open() end, {})
 -- Telescope
-vim.keymap.set("n", "<leader>p", builtin.find_files, {})
+vim.keymap.set("n", "<leader>p", builtin.git_files, {})
+vim.keymap.set("n", "<leader>F", builtin.find_files, {})
 vim.keymap.set("n", "<leader>P", telescope.extensions.project.project, {})
 vim.keymap.set("n", "<leader>/", builtin.live_grep, {})
+vim.keymap.set("n", "<leader>S", builtin.lsp_workspace_symbols, {})
 vim.keymap.set("n", "<leader>m", builtin.buffers, {})
 vim.keymap.set("n", "<leader>M", builtin.oldfiles, {})
+vim.keymap.set("n", "<leader>l", ":FzfLua lines<CR>", {})
 -- vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 vim.keymap.set("n", "<leader>K", builtin.colorscheme, {})
 -- Hop
@@ -642,7 +652,7 @@ require("lualine").setup({
     section_separators = "",
     component_separators = "",
     theme = "onenord",
-    -- section_separators = { left = '', right = '' },
-    -- component_separators = { left = '', right = '' }
+    section_separators = { left = '', right = '' },
+    component_separators = { left = '', right = '' }
   },
 })

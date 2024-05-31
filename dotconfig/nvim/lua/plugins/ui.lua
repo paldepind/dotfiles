@@ -10,9 +10,11 @@ return {
     "m4xshen/smartcolumn.nvim",
     opts = {}
   },
-
-  "lukas-reineke/indent-blankline.nvim",
-
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    opts = { scope = { show_start = false } }
+  },
   { -- Startup screen
     "goolord/alpha-nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
@@ -67,6 +69,9 @@ return {
     opts = {
       filesystem = {
         follow_current_file = { enabled = true },
+        filtered_items = {
+          hide_dotfiles = true,
+        }
       },
     },
     dependencies = {
@@ -75,7 +80,16 @@ return {
       "MunifTanjim/nui.nvim",
     },
   },
-
+  {
+    "antosha417/nvim-lsp-file-operations",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-neo-tree/neo-tree.nvim",
+    },
+    config = function()
+      require("lsp-file-operations").setup()
+    end,
+  },
   { -- Highlighting of TODO/FIXME/NOTE/... comments.
     "folke/todo-comments.nvim",
     cmd = { "TodoTelescope" }, -- "TodoTrouble"
@@ -92,7 +106,33 @@ return {
     --   "trouble"
     -- }
   },
-
+  {
+    'nanozuki/tabby.nvim',
+    event = 'VimEnter',
+    dependencies = 'nvim-tree/nvim-web-devicons',
+    config = function()
+      require('tabby.tabline').use_preset('active_wins_at_tail', {
+        theme = {
+          fill = 'TabLineFill',       -- tabline background
+          head = 'TabLine',           -- head element highlight
+          current_tab = 'TabLineSel', -- current tab label highlight
+          tab = 'TabLine',            -- other tab label highlight
+          win = 'TabLine',            -- window highlight
+          tail = 'TabLine',           -- tail element highlight
+        },
+        nerdfont = true,              -- whether use nerdfont
+        lualine_theme = nil,          -- lualine theme name
+        tab_name = {
+          name_fallback = function(tabid)
+            return tabid
+          end,
+        },
+        buf_name = {
+          mode = "'unique'|'relative'|'tail'|'shorten'",
+        },
+      })
+    end,
+  },
   {
     "f-person/auto-dark-mode.nvim",
     opts = {}
@@ -109,3 +149,4 @@ return {
     -- },
   }
 }
+
