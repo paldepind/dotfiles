@@ -20,6 +20,10 @@
           - bat
           - gcc
           - go
+          - kitty
+          - fd
+          - jq
+          - lazygit
         state: present
     - name: Setup fish shell
       user:
@@ -49,14 +53,14 @@
         src: "{{ dotfiles_dir }}/{{ item }}"
         dest: "{{ dotfiles_target }}/{{ item }}"
         state: link
-        force: true
       loop:
         - fish/config.fish
         - fish/fish_plugins
         - git/config
         - nvim/init.lua
         - nvim/lua
-        # - .config/nvim/luasnippets
+        - nvim/luasnippets
+        - kitty
 
     - name: Configure Sway environment
       include_tasks: tasks/sway.yml

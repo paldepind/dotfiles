@@ -7,7 +7,7 @@ fish_add_path ~/.cargo/bin
 # fish_add_path ~/flutter/bin
 fish_add_path ~/projects/flutter/bin
 # fish_add_path /opt/flutter/bin
-fish_add_path ~/projects/projectdo
+# fish_add_path ~/projects/projectdo
 fish_add_path ~/scripts
 
 # environment variables
@@ -20,12 +20,18 @@ set -x LANG en_US.UTF-8
 alias cat='bat'
 alias l='exa'
 alias nn='cd ~/Sync/notes; nvim'
+alias lvim='NVIM_APPNAME=lazyvim nvim'
 
 # projectdo setup
 abbr -a b --function projectdo_build
 abbr -a r --function projectdo_run
 abbr -a t --function projectdo_test
 abbr -a p --function projectdo_tool
+
+function get_editor
+    echo $EDITOR
+end
+abbr -a e --function get_editor
 
 function last_history_item
     echo $history[1]
