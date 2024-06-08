@@ -9,12 +9,11 @@
 
   tasks:
     - name: Install basic tools
-      become: yes
+      become: "{{ is_linux }}"
       package:
         name:
           - git
           - neovim
-          - kitty
           - ripgrep
           - fish
           - fzf
@@ -25,11 +24,13 @@
           - fd
           - jq
           - lazygit
+          - npm
         state: present
     - name: Setup fish shell
       user:
         name: simon
-        shell: /bin/fish
+          # shell: /bin/fish
+        shell: "{{ '/bin/fish' if is_linux else '/opt/homebrew/bin/fish' }}"
         state: present
       become: true
     - name: Ensure projects directory
@@ -39,6 +40,7 @@
 
     - name: Configure GNOME
       include_tasks: tasks/gnome.yml
+      when: is_linux
 
     - name: Ensure projects directory
       file:
@@ -62,8 +64,8 @@
         - nvim/lua
         # - nvim/luasnippets
         - lazyvim
-        - kitty
+        # - kitty
 
     - name: Configure Sway environment
       include_tasks: tasks/sway.yml
-
+      when: is_linux

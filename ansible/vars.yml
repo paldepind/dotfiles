@@ -1,3 +1,4 @@
 ---
 dotfiles_dir: ~/config/dotconfig
 dotfiles_target: ~/.config
+is_linux: "{{ ansible_os_family != 'Darwin' }}"
