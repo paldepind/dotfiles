@@ -25,6 +25,7 @@
           - jq
           - lazygit
           - npm
+          - eza
         state: present
     - name: Setup fish shell
       user:
@@ -64,6 +65,7 @@
         - nvim/lua
         # - nvim/luasnippets
         - lazyvim
+        - emacs
         # - kitty
 
     - name: Configure Sway environment
